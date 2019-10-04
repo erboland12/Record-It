@@ -14,4 +14,6 @@ public class MovePage {
         intent.putExtra(id, data);
         current.startActivity(intent);
     }
+
+    public int seven;
 }
