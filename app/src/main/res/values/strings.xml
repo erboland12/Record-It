@@ -5,4 +5,5 @@
     <string name="add_record_album">Album Name</string>
     <string name="add_record_artist">Artist</string>
     <string name="add_record_rating">Rating</string>
+    <string name="main_add_db">Add to DB</string>
 </resources>

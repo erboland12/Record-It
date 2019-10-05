@@ -25,6 +25,7 @@ public class AddRecord extends AppCompatActivity {
         albumName = (EditText) findViewById(R.id.editText);
         artistName = (EditText) findViewById(R.id.editText2);
         rating = findViewById(R.id.add_record_rating);
+
         //Button creation and listener creation
         Button mAddBtn = findViewById(R.id.addRecordBtn);
 
