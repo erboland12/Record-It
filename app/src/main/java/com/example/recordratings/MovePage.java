@@ -15,5 +15,6 @@ public class MovePage {
         current.startActivity(intent);
     }
 
-    public int seven;
+
+
 }

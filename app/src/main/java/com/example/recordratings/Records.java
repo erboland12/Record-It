@@ -32,4 +32,9 @@ public class Records {
         }
         return recordsList;
     }
+
+    public static ArrayList<Records> addRecord(ArrayList<Records> list, Records r){
+        list.add(r);
+        return list;
+    }
 }

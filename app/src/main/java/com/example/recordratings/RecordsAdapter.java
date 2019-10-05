@@ -59,10 +59,7 @@ public class RecordsAdapter extends
         TextView textView2 = viewHolder.artistTextView;
         textView2.setText(buf.getAritst());
         TextView textView3 = viewHolder.ratingTextView;
-        textView3.setText(Double.toString(buf.getRating()));
-//        Button button = (Button) viewHolder.itemView;
-//        button.setText(buf.getBirdUp() ? "Bird Up" : "Snail Down");
-//        button.setEnabled(buf.getBirdUp());
+        textView3.setText(Double.toString(buf.getRating()) + "/5");
     }
 
     // Returns the total count of items in the list
@@ -70,4 +67,5 @@ public class RecordsAdapter extends
     public int getItemCount() {
         return mRecords.size();
     }
+
 }

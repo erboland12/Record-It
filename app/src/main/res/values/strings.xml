@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Record Ratings</string>
+    <string name="main_add_button">Add</string>
+    <string name="add_record_title">Add Record</string>
+    <string name="add_record_album">Album Name</string>
+    <string name="add_record_artist">Artist</string>
+    <string name="add_record_rating">Rating</string>
 </resources>
