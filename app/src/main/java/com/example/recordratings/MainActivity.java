@@ -1,9 +1,11 @@
 package com.example.recordratings;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
@@ -29,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
     String artist = "Artist DB";
     Double rating = 4.5;
 
+    private List<Records> rl;
+    private RecordsAdapter adapter;
+
     //Button declaration
     Button button;
     Button dbButton;
@@ -40,13 +45,28 @@ public class MainActivity extends AppCompatActivity {
         dbh = new DatabaseHelper(this);
 
         RecyclerView rvRecords = findViewById(R.id.rvRecords);
+//
+//        final RecordsAdapter adapter = new RecordsAdapter(records);
+//
+//        rvRecords.setAdapter(adapter);
+//        rvRecords.setLayoutManager(new LinearLayoutManager(this));
+
+        //addToDB();
+
+        //Displays DB data in RecyclerView
+        Cursor cursor = dbh.getAllData();
+
+        if(cursor.moveToFirst()){
+            for(int i = 0; i <= cursor.getCount(); i++) {
+                Records r = new Records(cursor.getString(1), cursor.getString(2), cursor.getDouble(3));
+                records.add(r);
+            }
+
+        }
 
         final RecordsAdapter adapter = new RecordsAdapter(records);
-
         rvRecords.setAdapter(adapter);
         rvRecords.setLayoutManager(new LinearLayoutManager(this));
-
-        addToDB();
 
         button = findViewById(R.id.main_add_button);
 
@@ -64,11 +84,33 @@ public class MainActivity extends AppCompatActivity {
                 boolean isInserted = dbh.insertData(album, artist, rating);
                 if(isInserted == true){
                     Toast.makeText(MainActivity.this, "Data Inserted", Toast.LENGTH_LONG).show();
-                } else {
+                    Cursor res = dbh.getAllData();
+                    if(res.getCount() == 0){
+                        showMessage("Error", "No Data Found");
+                        return;
+                    } else {
+                        StringBuffer buffer = new StringBuffer();
+                        while(res.moveToNext()){
+                            buffer.append("ID :" + res.getString(0) + "\n");
+                            buffer.append("ALBUM :" + res.getString(1) + "\n");
+                            buffer.append("ARTIST :" + res.getString(2) + "\n");
+                            buffer.append("RATING :" + res.getDouble(3) + "\n\n");
+                        }
+
+                        showMessage("Data", buffer.toString());
+                    }
+                } else
                     Toast.makeText(MainActivity.this, "Insertion Failed", Toast.LENGTH_LONG).show();
-                }
             }
         });
+    }
+
+    public void showMessage(String title, String message){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.show();
     }
 
 }
