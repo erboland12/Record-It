@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -21,8 +20,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     //Records global
-    private SQLiteDatabase mDatabase;
-    public static  RecyclerView rvRecords;
     public static ArrayList<Records> records = new ArrayList<>();
 
     //Intent module call
@@ -35,12 +32,11 @@ public class MainActivity extends AppCompatActivity {
     Double rating = 4.5;
 
     private List<Records> rl;
-    public static RecordsAdapter adapter;
+    private RecordsAdapter adapter;
 
     //Button declaration
     Button button;
     Button dbButton;
-    Button dbDelButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,43 +44,35 @@ public class MainActivity extends AppCompatActivity {
 
         dbh = new DatabaseHelper(this);
 
-        rvRecords = findViewById(R.id.rvRecords);
+        RecyclerView rvRecords = findViewById(R.id.rvRecords);
+//
+//        final RecordsAdapter adapter = new RecordsAdapter(records);
+//
+//        rvRecords.setAdapter(adapter);
+//        rvRecords.setLayoutManager(new LinearLayoutManager(this));
+
+        //addToDB();
 
         //Displays DB data in RecyclerView
-        final Cursor cursor = dbh.getAllData();
+        Cursor cursor = dbh.getAllData();
 
-        if(cursor.moveToNext()){
-            do {
-                records.add(new Records(
-                        cursor.getString(1),
-                        cursor.getString(2),
-                        cursor.getDouble(3)
-                ));
-            } while (cursor.moveToNext());
-            RecordsAdapter adapter = new RecordsAdapter(records);
-            rvRecords.setAdapter(adapter);
-            rvRecords.setLayoutManager(new LinearLayoutManager(this));
-            adapter.notifyDataSetChanged();
-            records = new ArrayList<>();
+        if(cursor.moveToFirst()){
+            for(int i = 0; i <= cursor.getCount(); i++) {
+                Records r = new Records(cursor.getString(1), cursor.getString(2), cursor.getDouble(3));
+                records.add(r);
+            }
+
         }
 
+        final RecordsAdapter adapter = new RecordsAdapter(records);
+        rvRecords.setAdapter(adapter);
+        rvRecords.setLayoutManager(new LinearLayoutManager(this));
 
         button = findViewById(R.id.main_add_button);
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
                m.moveActivity(MainActivity.this, AddRecord.class);
-            }
-        });
-
-        dbDelButton = findViewById(R.id.delete_DB);
-        dbDelButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v){
-//                Integer deletedRows = dbh.deleteData(Integer.toString(cursor.getColumnCount()-1));
-//
-//                adapter.notifyDataSetChanged();
-//                finish();
-//                startActivity(getIntent());
             }
         });
     }
@@ -124,6 +112,5 @@ public class MainActivity extends AppCompatActivity {
         builder.setMessage(message);
         builder.show();
     }
-
 
 }

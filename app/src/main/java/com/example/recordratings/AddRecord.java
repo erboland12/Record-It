@@ -2,7 +2,6 @@ package com.example.recordratings;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.database.Cursor;
@@ -12,8 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.TextView;
-
-import static com.example.recordratings.MainActivity.records;
 
 public class AddRecord extends AppCompatActivity {
     private MovePage m = new MovePage();
@@ -45,23 +42,11 @@ public class AddRecord extends AppCompatActivity {
                                     artistName.getEditableText().toString(),
                                     rating.getRating());
                 if(isInserted){
-                    Cursor res = dbh.getAllData();
-                    StringBuffer buffer = new StringBuffer();
-                    while(res.moveToNext()){
-                        buffer.append("ID :" + res.getString(0) + "\n");
-                        buffer.append("ALBUM :" + res.getString(1) + "\n");
-                        buffer.append("ARTIST :" + res.getString(2) + "\n");
-                        buffer.append("RATING :" + res.getDouble(3) + "\n\n");
-                    }
-
-                    showMessage("Data", buffer.toString());
                     m.moveActivity(AddRecord.this, MainActivity.class);
                 }
             }
         });
     }
-
-
 
     public void showMessage(String title, String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

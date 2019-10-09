@@ -48,11 +48,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public Integer deleteData(String id){
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME, "id=?", new String[]{id});
-    }
-
     public Cursor getAllData(){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
