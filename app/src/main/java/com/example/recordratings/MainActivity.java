@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         rvRecords = findViewById(R.id.rvRecords);
 
         //Displays DB data in RecyclerView
-        Cursor cursor = dbh.getAllData();
+        final Cursor cursor = dbh.getAllData();
 
         if(cursor.moveToNext()){
             do {
@@ -80,10 +80,9 @@ public class MainActivity extends AppCompatActivity {
         dbDelButton = findViewById(R.id.delete_DB);
         dbDelButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
-                for(int i = 1; i < 100; i++){
-                    Integer deletedRows = dbh.deleteData(Integer.toString(i));
-                }
-                adapter.notifyDataSetChanged();
+//                Integer deletedRows = dbh.deleteData(Integer.toString(cursor.getColumnCount()-1));
+//
+//                adapter.notifyDataSetChanged();
 //                finish();
 //                startActivity(getIntent());
             }
