@@ -6,4 +6,5 @@
     <string name="add_record_artist">Artist</string>
     <string name="add_record_rating">Rating</string>
     <string name="main_add_db">Add to DB</string>
+    <string name="main_del_db">Delete</string>
 </resources>
