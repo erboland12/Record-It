@@ -9,6 +9,7 @@
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
     <androidx.appcompat.widget.SearchView
+        android:id="@+id/action_search"
         android:layout_marginLeft="20pt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

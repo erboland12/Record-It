@@ -2,6 +2,7 @@ package com.example.recordratings;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
     Button button;
     Button dbButton;
     Button dbDelButton;
+
+    //Search
+    public static SearchView search;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        search = findViewById(R.id.action_search);
 
         dbh = new DatabaseHelper(this);
 
@@ -71,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
             records = new ArrayList<>();
         }
+
+        addToDB2();
 
 
         button = findViewById(R.id.main_add_button);
@@ -118,6 +126,20 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else
                     Toast.makeText(MainActivity.this, "Insertion Failed", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void addToDB2(){
+        dbButton = findViewById(R.id.add_DB);
+        dbButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (search.getQuery() != "") {
+                    showMessage("Success", search.getQuery().toString());
+                } else{
+                    return;
+                }
             }
         });
     }
