@@ -7,10 +7,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,8 +26,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     //Records global
-    private SQLiteDatabase mDatabase;
-    public static  RecyclerView rvRecords;
+    public RecyclerView rvRecords;
     public static ArrayList<Records> records = new ArrayList<>();
 
     //Intent module call
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     Double rating = 4.5;
 
     private List<Records> rl;
-    public static RecordsAdapter adapter;
+    public RecordsAdapter adapter;
 
     //Button declaration
     Button button;
@@ -54,31 +56,25 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        search = findViewById(R.id.action_search);
-
         dbh = new DatabaseHelper(this);
 
         rvRecords = findViewById(R.id.rvRecords);
 
-        //Displays DB data in RecyclerView
-        Cursor cursor = dbh.getAllData();
+        adapter = new RecordsAdapter(records);
 
-        if(cursor.moveToNext()){
-            do {
-                records.add(new Records(
-                        cursor.getString(1),
-                        cursor.getString(2),
-                        cursor.getDouble(3)
-                ));
-            } while (cursor.moveToNext());
-            RecordsAdapter adapter = new RecordsAdapter(records);
-            rvRecords.setAdapter(adapter);
-            rvRecords.setLayoutManager(new LinearLayoutManager(this));
-            adapter.notifyDataSetChanged();
-            records = new ArrayList<>();
-        }
+        rvRecords.setAdapter(adapter);
+
+        searchRV();
 
         addToDB2();
+
+        rvRecords.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Toast toast = Toast.makeText(MainActivity.this, "Word", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
 
 
         button = findViewById(R.id.main_add_button);
@@ -150,6 +146,73 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle(title);
         builder.setMessage(message);
         builder.show();
+    }
+
+    //Performs filter on database
+    private void filter(CharSequence text){
+        Cursor cursor = dbh.getAllData();
+        if (cursor.moveToFirst()) {
+            do {
+                if (cursor.getString(2).toLowerCase().contains(text)) {
+                    Log.d(text.toString(), "Match");
+                    records.add(new Records(
+                            cursor.getString(1),
+                            cursor.getString(2),
+                            cursor.getDouble(3)
+                    ));
+                } else {
+                    Log.d(text.toString(), cursor.getString(2).toLowerCase());
+                }
+            } while (cursor.moveToNext());
+            adapter = new RecordsAdapter(records);
+            rvRecords.setAdapter(adapter);
+            rvRecords.setLayoutManager(new LinearLayoutManager(this));
+            adapter.notifyDataSetChanged();
+            records = new ArrayList<>();
+
+        }
+    }
+
+    //Loads content of RV from database entries
+    public void loadRV(){
+        Cursor cursor = dbh.getAllData();
+
+        if (cursor.moveToNext()) {
+            do {
+                records.add(new Records(
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getDouble(3)
+                ));
+            } while (cursor.moveToNext());
+            rvRecords.setAdapter(adapter);
+            rvRecords.setLayoutManager(new LinearLayoutManager(this));
+            adapter.notifyDataSetChanged();
+            records = new ArrayList<>();
+        }
+
+    }
+
+    //Filters Recycler View based on search input
+    public void searchRV(){
+        search = findViewById(R.id.action_search);
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filter(query.toLowerCase());
+                Log.d(query, "Query");
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filter(newText.toLowerCase());
+                Log.d(newText, "New Text");
+                return false;
+            }
+
+        });
+        loadRV();
     }
 
 

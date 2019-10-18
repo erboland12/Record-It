@@ -7,4 +7,6 @@
     <string name="add_record_rating">Rating</string>
     <string name="main_add_db">Add to DB</string>
     <string name="search">Search</string>
+    <string name="record_page_album">Album</string>
+    <string name="record_page_artist">Artist</string>
 </resources>
