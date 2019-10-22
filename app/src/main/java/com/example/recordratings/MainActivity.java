@@ -15,7 +15,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     String artist = "Artist DB";
     Double rating = 4.5;
 
+
     private List<Records> rl;
     public RecordsAdapter adapter;
 
@@ -45,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     Button button;
     Button dbButton;
     Button dbDelButton;
+
+    Spinner filter;
 
     //Search
     public static SearchView search;
@@ -66,7 +71,9 @@ public class MainActivity extends AppCompatActivity {
 
         searchRV();
 
-        addToDB2();
+        showDB();
+
+        populateFilter();
 
         rvRecords.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -85,57 +92,38 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        dbDelButton = findViewById(R.id.delete_DB);
-//        dbDelButton.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v){
-//                for(int i = 1; i < 100; i++){
-//                    Integer deletedRows = dbh.deleteData(Integer.toString(i));
-//                }
-//                adapter.notifyDataSetChanged();
-////                finish();
-////                startActivity(getIntent());
-//            }
-//        });
-    }
-
-    public void addToDB(){
-        dbButton = findViewById(R.id.add_DB);
-        dbButton.setOnClickListener(new View.OnClickListener(){
+        dbDelButton = findViewById(R.id.delete_DB);
+        dbDelButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
-                boolean isInserted = dbh.insertData(album, artist, rating);
-                if(isInserted == true){
-                    Toast.makeText(MainActivity.this, "Data Inserted", Toast.LENGTH_LONG).show();
-                    Cursor res = dbh.getAllData();
-                    if(res.getCount() == 0){
-                        showMessage("Error", "No Data Found");
-                        return;
-                    } else {
-                        StringBuffer buffer = new StringBuffer();
-                        while(res.moveToNext()){
-                            buffer.append("ID :" + res.getString(0) + "\n");
-                            buffer.append("ALBUM :" + res.getString(1) + "\n");
-                            buffer.append("ARTIST :" + res.getString(2) + "\n");
-                            buffer.append("RATING :" + res.getDouble(3) + "\n\n");
-                        }
-
-                        showMessage("Data", buffer.toString());
-                    }
-                } else
-                    Toast.makeText(MainActivity.this, "Insertion Failed", Toast.LENGTH_LONG).show();
+                for(int i = 1; i < 250; i++){
+                    Integer deletedRows = dbh.deleteData(Integer.toString(i));
+                }
+                adapter.notifyDataSetChanged();
+                finish();
+                startActivity(getIntent());
             }
         });
     }
 
-    public void addToDB2(){
-        dbButton = findViewById(R.id.add_DB);
-        dbButton.setOnClickListener(new View.OnClickListener() {
+
+    public void showDB(){
+        Button b = findViewById(R.id.add_DB);
+        b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (search.getQuery() != "") {
-                    showMessage("Success", search.getQuery().toString());
-                } else{
-                    return;
+                Cursor res = dbh.getAllData();
+                StringBuffer buffer = new StringBuffer();
+                while(res.moveToNext()){
+                    buffer.append("ID :" + res.getString(0) + "\n");
+                    buffer.append("ALBUM :" + res.getString(1) + "\n");
+                    buffer.append("ARTIST :" + res.getString(2) + "\n");
+                    buffer.append("RATING :" + res.getDouble(3) + "\n");
+                    buffer.append("PHOTO URL :" + res.getString(4) + "\n");
+                    buffer.append("GENRE :" + res.getString(5) + "\n");
+                    buffer.append("DESCRIPTION :" + res.getString(6) + "\n");
                 }
+
+                showMessage("Data", buffer.toString());
             }
         });
     }
@@ -153,16 +141,43 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = dbh.getAllData();
         if (cursor.moveToFirst()) {
             do {
-                if (cursor.getString(2).toLowerCase().contains(text)) {
-                    Log.d(text.toString(), "Match");
-                    records.add(new Records(
-                            cursor.getString(1),
-                            cursor.getString(2),
-                            cursor.getDouble(3)
-                    ));
-                } else {
-                    Log.d(text.toString(), cursor.getString(2).toLowerCase());
+                if (filter.getSelectedItem().toString() == "Album"){
+                    if (cursor.getString(1).toLowerCase().contains(text)) {
+                        Log.d(text.toString(), "Match");
+                        records.add(new Records(
+                                cursor.getString(1),
+                                cursor.getString(2),
+                                cursor.getDouble(3)
+                        ));
+                    } else {
+                        Log.d(text.toString(), cursor.getString(1).toLowerCase());
+                    }
                 }
+                if (filter.getSelectedItem().toString() == "Artist"){
+                    if (cursor.getString(2).toLowerCase().contains(text)) {
+                        Log.d(text.toString(), "Match");
+                        records.add(new Records(
+                                cursor.getString(1),
+                                cursor.getString(2),
+                                cursor.getDouble(3)
+                        ));
+                    } else {
+                        Log.d(text.toString(), cursor.getString(2).toLowerCase());
+                    }
+                }
+                if (filter.getSelectedItem().toString() == "Genre"){
+                    if (cursor.getString(5).toLowerCase().contains(text)) {
+                        Log.d(text.toString(), "Match");
+                        records.add(new Records(
+                                cursor.getString(1),
+                                cursor.getString(2),
+                                cursor.getDouble(3)
+                        ));
+                    } else {
+                        Log.d(text.toString(), cursor.getString(5).toLowerCase());
+                    }
+                }
+
             } while (cursor.moveToNext());
             adapter = new RecordsAdapter(records);
             rvRecords.setAdapter(adapter);
@@ -213,6 +228,16 @@ public class MainActivity extends AppCompatActivity {
 
         });
         loadRV();
+    }
+
+    private void populateFilter(){
+        filter = findViewById(R.id.filter_spinner);
+
+        String[] items = new String[]{"Artist", "Album", "Genre"};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        filter.setAdapter(adapter);
+        filter.setPrompt("Title");
     }
 
 

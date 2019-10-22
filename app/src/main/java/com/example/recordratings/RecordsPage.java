@@ -1,6 +1,7 @@
 package com.example.recordratings;
 
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -17,6 +18,9 @@ public class RecordsPage extends AppCompatActivity {
     public static String albumTemp;
     public static String artistTemp;
     public static double ratingTemp;
+
+    //Buttons
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
