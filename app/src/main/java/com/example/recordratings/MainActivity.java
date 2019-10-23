@@ -147,10 +147,11 @@ public class MainActivity extends AppCompatActivity {
                         records.add(new Records(
                                 cursor.getString(1),
                                 cursor.getString(2),
-                                cursor.getDouble(3)
+                                cursor.getDouble(3),
+                                cursor.getString(4),
+                                cursor.getString(5),
+                                cursor.getString(6)
                         ));
-                    } else {
-                        Log.d(text.toString(), cursor.getString(1).toLowerCase());
                     }
                 }
                 if (filter.getSelectedItem().toString() == "Artist"){
@@ -159,10 +160,11 @@ public class MainActivity extends AppCompatActivity {
                         records.add(new Records(
                                 cursor.getString(1),
                                 cursor.getString(2),
-                                cursor.getDouble(3)
+                                cursor.getDouble(3),
+                                cursor.getString(4),
+                                cursor.getString(5),
+                                cursor.getString(6)
                         ));
-                    } else {
-                        Log.d(text.toString(), cursor.getString(2).toLowerCase());
                     }
                 }
                 if (filter.getSelectedItem().toString() == "Genre"){
@@ -171,13 +173,28 @@ public class MainActivity extends AppCompatActivity {
                         records.add(new Records(
                                 cursor.getString(1),
                                 cursor.getString(2),
-                                cursor.getDouble(3)
+                                cursor.getDouble(3),
+                                cursor.getString(4),
+                                cursor.getString(5),
+                                cursor.getString(6)
                         ));
-                    } else {
-                        Log.d(text.toString(), cursor.getString(5).toLowerCase());
                     }
                 }
-
+                if (filter.getSelectedItem().toString() == "No Filter") {
+                    if (cursor.getString(5).toLowerCase().contains(text) ||
+                            cursor.getString(1).toLowerCase().contains(text) ||
+                            cursor.getString(2).toLowerCase().contains(text)) {
+                        Log.d(text.toString(), "Match");
+                        records.add(new Records(
+                                cursor.getString(1),
+                                cursor.getString(2),
+                                cursor.getDouble(3),
+                                cursor.getString(4),
+                                cursor.getString(5),
+                                cursor.getString(6)
+                        ));
+                    }
+                }
             } while (cursor.moveToNext());
             adapter = new RecordsAdapter(records);
             rvRecords.setAdapter(adapter);
@@ -197,7 +214,10 @@ public class MainActivity extends AppCompatActivity {
                 records.add(new Records(
                         cursor.getString(1),
                         cursor.getString(2),
-                        cursor.getDouble(3)
+                        cursor.getDouble(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getString(6)
                 ));
             } while (cursor.moveToNext());
             rvRecords.setAdapter(adapter);
@@ -233,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
     private void populateFilter(){
         filter = findViewById(R.id.filter_spinner);
 
-        String[] items = new String[]{"Artist", "Album", "Genre"};
+        String[] items = new String[]{"No Filter", "Artist", "Album", "Genre"};
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         filter.setAdapter(adapter);
