@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
 
@@ -14,6 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Records Database variables
     public static final String DATABASE_NAME = "Records.db";
     public static final String TABLE_NAME = "Records_Table";
+    public static final String RECORDS_TABLE = "Records_Table_7";
 
     //Fields for database
     public static final String ID = "ID";
@@ -30,17 +32,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL("CREATE TABLE " + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, ALBUM TEXT, ARTIST TEXT, RATING DOUBLE, " +
-                "                                                PHOTO TEXT, GENRE TEXT, DESCRIPTION VARCHAR(1000))");
+        sqLiteDatabase.execSQL("CREATE TABLE " + RECORDS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, ALBUM TEXT, ARTIST TEXT, RATING DOUBLE, " +
+                "                                                PHOTO BLOB, GENRE TEXT, DESCRIPTION VARCHAR(1000))");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + RECORDS_TABLE);
         onCreate(sqLiteDatabase);
     }
 
-    public boolean insertData(String album, String artist, double rating, String photo, String genre, String description){
+    public boolean insertData(String album, String artist, double rating, byte[] photo, String genre, String description){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(ALBUM, album);
@@ -49,7 +51,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(PHOTO, photo);
         contentValues.put(GENRE, genre);
         contentValues.put(DESCRIPTION, description);
-        long result = db.insert(TABLE_NAME, null, contentValues);
+        long result = db.insert(RECORDS_TABLE, null, contentValues);
         if(result == -1){
             return false;
         }else{
@@ -59,18 +61,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Integer deleteData(String row) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME, "id=?", new String[]{row});
+        return db.delete(RECORDS_TABLE, "id=?", new String[]{row});
     }
 
     public Cursor getAllData(){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        Cursor res = db.rawQuery("SELECT * FROM " + RECORDS_TABLE, null);
         return res;
     }
 
-    public void alterData(){
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD GENRE TEXT ");
-        db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD DESCRIPTION VARCHAR(1000) ");
-    }
 }

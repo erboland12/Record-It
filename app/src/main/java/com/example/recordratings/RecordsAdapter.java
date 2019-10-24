@@ -2,7 +2,10 @@ package com.example.recordratings;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Rating;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +19,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.w3c.dom.Text;
+
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +32,8 @@ public class RecordsAdapter extends
         public TextView titleTextView;
         public ImageView photoImageView;
         public RatingBar ratingBar;
+        public TextView descTextView;
+        public TextView genreTextView;
 
         public ViewHolder(View itemView){
             super(itemView);
@@ -66,7 +74,8 @@ public class RecordsAdapter extends
 
         // Set item views based on your views and data model
         final ImageView imageView = viewHolder.photoImageView;
-        imageView.setImageResource(R.drawable.five);
+        Bitmap image = buf.getPhoto();
+        imageView.setImageBitmap(image);
         final TextView textView = viewHolder.titleTextView;
         textView.setText(buf.getTitle() + " - " + buf.getArtist());
         final RatingBar rating = viewHolder.ratingBar;
@@ -79,6 +88,9 @@ public class RecordsAdapter extends
                 RecordsPage.albumTemp = buf.getTitle();
                 RecordsPage.artistTemp = buf.getArtist();
                 RecordsPage.ratingTemp = buf.getRating();
+                RecordsPage.photoTemp = buf.getPhoto();
+                RecordsPage.genreTemp = buf.getGenre();
+                RecordsPage.descTemp = buf.getDesc();
                 m.moveActivity(viewHolder.itemView.getContext(), RecordsPage.class);
             }
         });
@@ -88,6 +100,28 @@ public class RecordsAdapter extends
     @Override
     public int getItemCount() {
         return mRecords.size();
+    }
+
+    public Bitmap StringToBitMap(String encodedString){
+        try{
+            byte [] encodeByte = Base64.decode(encodedString,Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        }
+        catch(Exception e){
+            e.getMessage();
+            return null;
+        }
+    }
+
+    public static byte[] getBytes(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        return stream.toByteArray();
+    }
+
+    public static Bitmap getImage(byte[] image) {
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 
 }

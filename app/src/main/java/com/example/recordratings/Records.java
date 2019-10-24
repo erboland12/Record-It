@@ -1,16 +1,18 @@
 package com.example.recordratings;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 
 public class Records {
     private String mTitle;
     private String mArtist;
     private double mRating;
-    private String mPhoto;
+    private Bitmap mPhoto;
     private String mGenre;
     private String mDescription;
 
-    public Records(String title, String artist, double rating, String photo, String genre, String description){
+    public Records(String title, String artist, double rating, Bitmap photo, String genre, String description){
         mTitle = title;
         mArtist = artist;
         mRating = rating;
@@ -31,7 +33,7 @@ public class Records {
         return mRating;
     }
 
-    public String getPhoto(){
+    public Bitmap getPhoto(){
         return mPhoto;
     }
 
