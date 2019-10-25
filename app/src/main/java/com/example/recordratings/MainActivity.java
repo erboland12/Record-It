@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -65,7 +66,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Prevents soft keyboard from pushing view up
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
+        //Calls toolbar xml file
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -278,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static Bitmap getImage(byte[] image) {
-        return getResizedBitmap(BitmapFactory.decodeByteArray(image, 0, image.length), 250, 500);
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 
     public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
