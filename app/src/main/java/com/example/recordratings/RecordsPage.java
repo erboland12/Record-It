@@ -10,6 +10,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class RecordsPage extends AppCompatActivity {
 
@@ -18,7 +19,6 @@ public class RecordsPage extends AppCompatActivity {
     TextView artist;
     ImageView photo;
     RatingBar rating;
-    TextView genre;
     TextView description;
 
     //Placeholders for recycler view variables
@@ -29,17 +29,12 @@ public class RecordsPage extends AppCompatActivity {
     public static String descTemp;
     public static Bitmap photoTemp;
 
-    //Buttons
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_records_page);
 
         setDetailViewVariables();
-
-
 
     }
 
@@ -55,17 +50,18 @@ public class RecordsPage extends AppCompatActivity {
 
         photo = findViewById(R.id.records_page_image);
         photo.setImageBitmap(photoTemp);
+
+        description = findViewById(R.id.records_page_desc);
+        description.setText(descTemp);
+
+        setBackground(genreTemp);
+
     }
 
-    public Bitmap StringToBitMap(String encodedString){
-        try{
-            byte [] encodeByte = Base64.decode(encodedString,Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        }
-        catch(Exception e){
-            e.getMessage();
-            return null;
-        }
+    private void setBackground(String genre){
+        ConstraintLayout bg = findViewById(R.id.records_page_background);
+//        bg.setBackground(R.drawable.five);
+
     }
+
 }

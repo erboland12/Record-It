@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Search
     public static SearchView search;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,13 +77,33 @@ public class MainActivity extends AppCompatActivity {
         dbh = new DatabaseHelper(this);
         //dbh.onCreate(dbh.getWritableDatabase());
 
+        //Initializes RV w/ adapter
         rvRecords = findViewById(R.id.rvRecords);
-
         adapter = new RecordsAdapter(records);
-
         rvRecords.setAdapter(adapter);
 
+        //Sets up search view and filter spinner
+        search = findViewById(R.id.action_search);
+        filter = findViewById(R.id.filter_spinner);
+
+        //Makes initial call to load db contents into RV and creates listener for only showing
+        //filter when search icon is clicked.
         searchRV();
+        search.setOnSearchClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                filter.setVisibility(View.VISIBLE);
+            }
+        });
+
+        search.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                filter.setVisibility(View.INVISIBLE);
+                return false;
+            }
+        });
+
 
         showDB();
 
@@ -245,7 +266,6 @@ public class MainActivity extends AppCompatActivity {
 
     //Filters Recycler View based on search input
     public void searchRV(){
-        search = findViewById(R.id.action_search);
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -275,31 +295,8 @@ public class MainActivity extends AppCompatActivity {
         filter.setPrompt("Title");
     }
 
-    public static byte[] getBytes(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
-        return stream.toByteArray();
-    }
-
     public static Bitmap getImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
-    }
-
-    public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        // CREATE A MATRIX FOR THE MANIPULATION
-        Matrix matrix = new Matrix();
-        // RESIZE THE BIT MAP
-        matrix.postScale(scaleWidth, scaleHeight);
-
-        // "RECREATE" THE NEW BITMAP
-        Bitmap resizedBitmap = Bitmap.createBitmap(
-                bm, 0, 0, width, height, matrix, false);
-        bm.recycle();
-        return resizedBitmap;
     }
 
 
