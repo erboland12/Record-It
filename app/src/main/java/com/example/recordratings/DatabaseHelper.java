@@ -64,6 +64,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.delete(RECORDS_TABLE, "id=?", new String[]{row});
     }
 
+    public Integer deleteRecord(String row, int id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + RECORDS_TABLE, null);
+        do{
+            if(id == cursor.getInt(0)){
+                return db.delete(RECORDS_TABLE, "id=?", new String[]{row});
+            }
+        } while(cursor.moveToNext());
+        return -1;
+    }
+
     public Cursor getAllData(){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("SELECT * FROM " + RECORDS_TABLE, null);

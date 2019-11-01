@@ -85,6 +85,7 @@ public class RecordsAdapter extends
             public void onClick(View view) {
                 MovePage m = new MovePage();
                 Log.d("Word", "Up");
+                RecordsPage.idTemp = buf.getId();
                 RecordsPage.albumTemp = buf.getTitle();
                 RecordsPage.artistTemp = buf.getArtist();
                 RecordsPage.ratingTemp = buf.getRating();

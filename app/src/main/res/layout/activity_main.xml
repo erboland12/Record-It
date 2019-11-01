@@ -9,6 +9,10 @@
         layout="@layout/toolbar"
         android:id="@+id/toolbar" />
 
+<!--    <include-->
+<!--        layout="@layout/activity_drawer"-->
+<!--        android:id="@+id/drawerView" />-->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvRecords"
         android:layout_width="341dp"

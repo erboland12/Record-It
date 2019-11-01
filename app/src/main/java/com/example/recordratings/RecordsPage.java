@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -22,12 +23,20 @@ public class RecordsPage extends AppCompatActivity {
     TextView description;
 
     //Placeholders for recycler view variables
+    public static int idTemp;
     public static String albumTemp;
     public static String artistTemp;
     public static double ratingTemp;
     public static String genreTemp;
     public static String descTemp;
     public static Bitmap photoTemp;
+
+    //Buttons
+    private Button delBtn;
+    MovePage m;
+
+    //Database helper
+    DatabaseHelper dbh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +45,17 @@ public class RecordsPage extends AppCompatActivity {
 
         setDetailViewVariables();
 
+        dbh = new DatabaseHelper(this);
+
+        delBtn = findViewById(R.id.records_page_delete_btn);
+        delBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dbh.deleteData(Integer.toString(idTemp));
+                m = new MovePage();
+                m.moveActivity(RecordsPage.this, MainActivity.class);
+            }
+        });
     }
 
     private void setDetailViewVariables(){
@@ -60,7 +80,9 @@ public class RecordsPage extends AppCompatActivity {
 
     private void setBackground(String genre){
         ConstraintLayout bg = findViewById(R.id.records_page_background);
-//        bg.setBackground(R.drawable.five);
+//        if(genre != "Rock"){
+//            bg.setBackgroundColor(getResources().getColor(R.color.red));
+//        }
 
     }
 

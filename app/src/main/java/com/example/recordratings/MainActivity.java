@@ -16,6 +16,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -42,19 +44,12 @@ public class MainActivity extends AppCompatActivity {
 
     //Database module call
     DatabaseHelper dbh;
-    String album = "Album DB";
-    String artist = "Artist DB";
-    Double rating = 4.5;
-
-
-
 
     private List<Records> rl;
     public RecordsAdapter adapter;
 
    //Button declaration
     Button button;
-    Button dbButton;
     Button dbDelButton;
 
     Spinner filter;
@@ -74,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         dbh = new DatabaseHelper(this);
         //dbh.onCreate(dbh.getWritableDatabase());
 
@@ -86,9 +82,11 @@ public class MainActivity extends AppCompatActivity {
         search = findViewById(R.id.action_search);
         filter = findViewById(R.id.filter_spinner);
 
+
         //Makes initial call to load db contents into RV and creates listener for only showing
         //filter when search icon is clicked.
         searchRV();
+
         search.setOnSearchClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -154,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append("ALBUM :" + res.getString(1) + "\n");
                     buffer.append("ARTIST :" + res.getString(2) + "\n");
                     buffer.append("RATING :" + res.getDouble(3) + "\n");
-//                    buffer.append("PHOTO URL :" + res.getString(4) + "\n");
                     buffer.append("GENRE :" + res.getString(5) + "\n");
                     buffer.append("DESCRIPTION :" + res.getString(6) + "\n");
                 }
@@ -163,6 +160,46 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        if(filter.getVisibility() == View.INVISIBLE){
+            getMenuInflater().inflate(R.menu.menu_main, menu);
+        } else{
+            menu.findItem(R.id.action_favorite).setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_favorite) {
+
+            Toast.makeText(MainActivity.this, "Action clicked", Toast.LENGTH_LONG).show();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu (Menu menu) {
+        if (filter.getVisibility() == View.INVISIBLE) {
+            menu.findItem(R.id.action_favorite).setVisible(true);
+        } else if (filter.getVisibility() == View.VISIBLE){
+            menu.findItem(R.id.action_favorite).setVisible(false);
+        }
+        super.onPrepareOptionsMenu(menu);
+        return true;
+    }
+
 
     public void showMessage(String title, String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -181,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
                     if (cursor.getString(1).toLowerCase().contains(text)) {
                         Log.d(text.toString(), "Match");
                         records.add(new Records(
+                                cursor.getInt(0),
                                 cursor.getString(1),
                                 cursor.getString(2),
                                 cursor.getDouble(3),
@@ -194,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
                     if (cursor.getString(2).toLowerCase().contains(text)) {
                         Log.d(text.toString(), "Match");
                         records.add(new Records(
+                                cursor.getInt(0),
                                 cursor.getString(1),
                                 cursor.getString(2),
                                 cursor.getDouble(3),
@@ -207,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
                     if (cursor.getString(5).toLowerCase().contains(text)) {
                         Log.d(text.toString(), "Match");
                         records.add(new Records(
+                                cursor.getInt(0),
                                 cursor.getString(1),
                                 cursor.getString(2),
                                 cursor.getDouble(3),
@@ -222,6 +262,7 @@ public class MainActivity extends AppCompatActivity {
                             cursor.getString(2).toLowerCase().contains(text)) {
                         Log.d(text.toString(), "Match");
                         records.add(new Records(
+                                cursor.getInt(0),
                                 cursor.getString(1),
                                 cursor.getString(2),
                                 cursor.getDouble(3),
@@ -248,6 +289,7 @@ public class MainActivity extends AppCompatActivity {
         if (cursor.moveToNext()) {
             do {
                 records.add(new Records(
+                        cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getString(2),
                         cursor.getDouble(3),
