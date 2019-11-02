@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
         populateFilter();
 
 
-
         rvRecords.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
