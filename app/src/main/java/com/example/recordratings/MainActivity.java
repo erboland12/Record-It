@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         search = findViewById(R.id.action_search);
         filter = findViewById(R.id.filter_spinner);
 
-
         //Makes initial call to load db contents into RV and creates listener for only showing
         //filter when search icon is clicked.
         searchRV();
