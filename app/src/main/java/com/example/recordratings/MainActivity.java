@@ -1,9 +1,12 @@
 package com.example.recordratings;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -21,6 +24,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,7 +45,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     //Records global
     public RecyclerView rvRecords;
     public static ArrayList<Records> records = new ArrayList<>();
@@ -64,18 +68,29 @@ public class MainActivity extends AppCompatActivity {
     //Search
     public static SearchView search;
 
+    //Drawer Llayout
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setNavigationViewListener();
 
         //Prevents soft keyboard from pushing view up
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
+        //Sets up DrawerLayout and ActionBar
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+
         //Calls toolbar xml file
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         dbh = new DatabaseHelper(this);
         //dbh.onCreate(dbh.getWritableDatabase());
@@ -186,24 +201,51 @@ public class MainActivity extends AppCompatActivity {
         
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_favorite) {
-
-            Toast.makeText(MainActivity.this, "Action clicked", Toast.LENGTH_LONG).show();
+            mDrawerLayout.openDrawer(GravityCompat.START);
+            //Toast.makeText(MainActivity.this, "Action clicked", Toast.LENGTH_LONG).show();
             return true;
+        }
+        if (id == R.id.menu_add_record){
+            Toast.makeText(MainActivity.this, "Action clicked", Toast.LENGTH_LONG).show();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public boolean onPrepareOptionsMenu (Menu menu) {
-        if (filter.getVisibility() == View.INVISIBLE) {
-            menu.findItem(R.id.action_favorite).setVisible(true);
-        } else if (filter.getVisibility() == View.VISIBLE){
-            menu.findItem(R.id.action_favorite).setVisible(false);
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        switch (item.getItemId()) {
+            case R.id.menu_add_record: {
+                MovePage m = new MovePage();
+                m.moveActivity(MainActivity.this, AddRecord.class);
+                break;
+            }
+            case R.id.quit_app:{
+                finish();
+                System.exit(0);
+            }
         }
-        super.onPrepareOptionsMenu(menu);
+        //close navigation drawer
+        mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void setNavigationViewListener() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+//    @Override
+//    public boolean onPrepareOptionsMenu (Menu menu) {
+//        if (filter.getVisibility() == View.INVISIBLE) {
+//            menu.findItem(R.id.action_favorite).setVisible(true);
+//        } else if (filter.getVisibility() == View.VISIBLE){
+//            menu.findItem(R.id.action_favorite).setVisible(false);
+//        }
+//        super.onPrepareOptionsMenu(menu);
+//        return true;
+//    }
 
 
     public void showMessage(String title, String message){

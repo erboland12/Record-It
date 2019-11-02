@@ -15,4 +15,6 @@
     <string name="record_page_album">Album</string>
     <string name="record_page_artist">Artist</string>
     <string name="toolbar_filter">Filter Search</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
 </resources>
