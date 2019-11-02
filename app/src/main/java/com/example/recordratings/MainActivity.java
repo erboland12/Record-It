@@ -4,6 +4,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,6 +32,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.graphics.Matrix;
 
+
+import com.google.android.material.navigation.NavigationView;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
