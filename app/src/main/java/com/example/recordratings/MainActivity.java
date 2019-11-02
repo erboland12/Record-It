@@ -221,6 +221,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 m.moveActivity(MainActivity.this, AddRecord.class);
                 break;
             }
+            case R.id.settings:{
+                MovePage m = new MovePage();
+                m.moveActivity(MainActivity.this, SettingsActivity.class);
+            }
             case R.id.quit_app:{
                 finish();
                 System.exit(0);
