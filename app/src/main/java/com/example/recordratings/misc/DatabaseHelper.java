@@ -1,15 +1,12 @@
-package com.example.recordratings;
+package com.example.recordratings.misc;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
-
-import java.sql.Blob;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     //Records Database variables

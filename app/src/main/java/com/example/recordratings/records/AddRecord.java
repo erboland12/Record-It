@@ -1,35 +1,29 @@
-package com.example.recordratings;
+package com.example.recordratings.records;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.recordratings.misc.DatabaseHelper;
+import com.example.recordratings.MainActivity;
+import com.example.recordratings.misc.MovePage;
+import com.example.recordratings.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-
-import static com.example.recordratings.MainActivity.records;
 
 public class AddRecord extends AppCompatActivity {
     private int PICK_IMAGE_REQUEST = 1;

@@ -1,25 +1,25 @@
-package com.example.recordratings;
+package com.example.recordratings.records;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Rating;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
+import com.example.recordratings.MainActivity;
+import com.example.recordratings.misc.MovePage;
+import com.example.recordratings.R;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -28,17 +28,20 @@ import java.util.List;
 public class RecordsAdapter extends
     RecyclerView.Adapter<RecordsAdapter.ViewHolder> {
 
+    Fragment mFragment;
+    FragmentManager mManager;
+
     public class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView titleTextView;
+        public TextView albumTextView;
+        public TextView artistTextView;
         public ImageView photoImageView;
         public RatingBar ratingBar;
-        public TextView descTextView;
-        public TextView genreTextView;
 
         public ViewHolder(View itemView){
             super(itemView);
 
-            titleTextView = itemView.findViewById(R.id.title);
+            albumTextView = itemView.findViewById(R.id.album);
+            artistTextView = itemView.findViewById(R.id.artist);
             ratingBar = itemView.findViewById(R.id.rating);
             photoImageView = itemView.findViewById(R.id.photo);
         }
@@ -76,8 +79,10 @@ public class RecordsAdapter extends
         final ImageView imageView = viewHolder.photoImageView;
         Bitmap image = buf.getPhoto();
         imageView.setImageBitmap(image);
-        final TextView textView = viewHolder.titleTextView;
-        textView.setText(buf.getTitle() + " - " + buf.getArtist());
+        final TextView textView = viewHolder.albumTextView;
+        textView.setText(buf.getTitle());
+        final TextView textView2 = viewHolder.artistTextView;
+        textView2.setText(buf.getArtist());
         final RatingBar rating = viewHolder.ratingBar;
         rating.setRating((float) (buf.getRating()));
         viewHolder.itemView.setOnClickListener(new View.OnClickListener(){
@@ -85,13 +90,13 @@ public class RecordsAdapter extends
             public void onClick(View view) {
                 MovePage m = new MovePage();
                 Log.d("Word", "Up");
-                RecordsPage.idTemp = buf.getId();
-                RecordsPage.albumTemp = buf.getTitle();
-                RecordsPage.artistTemp = buf.getArtist();
-                RecordsPage.ratingTemp = buf.getRating();
-                RecordsPage.photoTemp = buf.getPhoto();
-                RecordsPage.genreTemp = buf.getGenre();
-                RecordsPage.descTemp = buf.getDesc();
+                RecordPageFragment.idTemp = buf.getId();
+                RecordPageFragment.albumTemp = buf.getTitle();
+                RecordPageFragment.artistTemp = buf.getArtist();
+                RecordPageFragment.ratingTemp = buf.getRating();
+                RecordPageFragment.photoTemp = buf.getPhoto();
+                RecordPageFragment.genreTemp = buf.getGenre();
+                RecordPageFragment.descTemp = buf.getDesc();
                 m.moveActivity(viewHolder.itemView.getContext(), RecordsPage.class);
             }
         });
@@ -103,26 +108,5 @@ public class RecordsAdapter extends
         return mRecords.size();
     }
 
-    public Bitmap StringToBitMap(String encodedString){
-        try{
-            byte [] encodeByte = Base64.decode(encodedString,Base64.DEFAULT);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        }
-        catch(Exception e){
-            e.getMessage();
-            return null;
-        }
-    }
-
-    public static byte[] getBytes(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
-        return stream.toByteArray();
-    }
-
-    public static Bitmap getImage(byte[] image) {
-        return BitmapFactory.decodeByteArray(image, 0, image.length);
-    }
 
 }

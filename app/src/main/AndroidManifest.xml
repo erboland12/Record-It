@@ -10,10 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".SettingsActivity"
+            android:name=".misc.SettingsActivity"
             android:label="@string/title_activity_settings"></activity>
-        <activity android:name=".RecordsPage" />
-        <activity android:name=".AddRecord" />
+        <activity android:name=".records.RecordsPage"
+                  android:theme="@style/FragTheme"/>
+        <activity android:name=".records.AddRecord" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

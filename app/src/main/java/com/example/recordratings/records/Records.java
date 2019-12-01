@@ -1,4 +1,4 @@
-package com.example.recordratings;
+package com.example.recordratings.records;
 
 import android.graphics.Bitmap;
 

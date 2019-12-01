@@ -1,4 +1,4 @@
-package com.example.recordratings;
+package com.example.recordratings.misc;
 
 import android.content.Context;
 import android.content.Intent;

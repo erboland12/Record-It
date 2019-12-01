@@ -8,23 +8,15 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,41 +26,43 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.graphics.Matrix;
 
 
+import com.example.recordratings.misc.DatabaseHelper;
+import com.example.recordratings.misc.MovePage;
+import com.example.recordratings.misc.SettingsActivity;
+import com.example.recordratings.records.AddRecord;
+import com.example.recordratings.records.Records;
+import com.example.recordratings.records.RecordsAdapter;
+import com.example.recordratings.records.RecordsPage;
 import com.google.android.material.navigation.NavigationView;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     //Records global
     public RecyclerView rvRecords;
     public static ArrayList<Records> records = new ArrayList<>();
+    private TextView emptyRv;
 
     //Intent module call
     MovePage m = new MovePage();
 
     //Database module call
     DatabaseHelper dbh;
-
-    private List<Records> rl;
     public RecordsAdapter adapter;
 
-   //Button declaration
-    Button button;
-    Button dbDelButton;
+    //Button declaration
+    private Button button;
+    private Button dbDelButton;
 
-    Spinner filter;
+    //Spinner declaration
+    private Spinner filter;
 
     //Search
     public static SearchView search;
 
-    //Drawer Llayout
+    //Drawer Layout
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
 
@@ -99,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         rvRecords = findViewById(R.id.rvRecords);
         adapter = new RecordsAdapter(records);
         rvRecords.setAdapter(adapter);
+        emptyRv = findViewById(R.id.no_records);
 
         //Sets up search view and filter spinner
         search = findViewById(R.id.action_search);
@@ -161,24 +156,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     public void showDB(){
-        Button b = findViewById(R.id.add_DB);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Cursor res = dbh.getAllData();
-                StringBuffer buffer = new StringBuffer();
-                while(res.moveToNext()){
-                    buffer.append("ID :" + res.getString(0) + "\n");
-                    buffer.append("ALBUM :" + res.getString(1) + "\n");
-                    buffer.append("ARTIST :" + res.getString(2) + "\n");
-                    buffer.append("RATING :" + res.getDouble(3) + "\n");
-                    buffer.append("GENRE :" + res.getString(5) + "\n");
-                    buffer.append("DESCRIPTION :" + res.getString(6) + "\n");
-                }
-
-                showMessage("Data", buffer.toString());
-            }
-        });
+//        Button b = findViewById(R.id.add_DB);
+//        b.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Cursor res = dbh.getAllData();
+//                StringBuffer buffer = new StringBuffer();
+//                while(res.moveToNext()){
+//                    buffer.append("ID :" + res.getString(0) + "\n");
+//                    buffer.append("ALBUM :" + res.getString(1) + "\n");
+//                    buffer.append("ARTIST :" + res.getString(2) + "\n");
+//                    buffer.append("RATING :" + res.getDouble(3) + "\n");
+//                    buffer.append("GENRE :" + res.getString(5) + "\n");
+//                    buffer.append("DESCRIPTION :" + res.getString(6) + "\n");
+//                }
+//
+//                showMessage("Data", buffer.toString());
+//            }
+//        });
     }
 
     @Override
@@ -336,23 +331,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //Loads content of RV from database entries
     public void loadRV(){
         Cursor cursor = dbh.getAllData();
-
-        if (cursor.moveToNext()) {
-            do {
-                records.add(new Records(
-                        cursor.getInt(0),
-                        cursor.getString(1),
-                        cursor.getString(2),
-                        cursor.getDouble(3),
-                        getImage(cursor.getBlob(4)),
-                        cursor.getString(5),
-                        cursor.getString(6)
-                ));
-            } while (cursor.moveToNext());
-            rvRecords.setAdapter(adapter);
-            rvRecords.setLayoutManager(new LinearLayoutManager(this));
-            adapter.notifyDataSetChanged();
-            records = new ArrayList<>();
+        if(cursor.getCount() > 0){
+            if (cursor.moveToNext()) {
+                do {
+                    records.add(new Records(
+                            cursor.getInt(0),
+                            cursor.getString(1),
+                            cursor.getString(2),
+                            cursor.getDouble(3),
+                            getImage(cursor.getBlob(4)),
+                            cursor.getString(5),
+                            cursor.getString(6)
+                    ));
+                } while (cursor.moveToNext());
+                rvRecords.setAdapter(adapter);
+                rvRecords.setLayoutManager(new LinearLayoutManager(this));
+                adapter.notifyDataSetChanged();
+                records = new ArrayList<>();
+            }
+        } else{
+            emptyRv.setVisibility(View.VISIBLE);
         }
 
     }
@@ -392,5 +390,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        this.finishAffinity();
+    }
 }

@@ -1,10 +1,12 @@
-package com.example.recordratings;
+package com.example.recordratings.misc;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.example.recordratings.R;
 
 public class SettingsActivity extends AppCompatActivity {
 
