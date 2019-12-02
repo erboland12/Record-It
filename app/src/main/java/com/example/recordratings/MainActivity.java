@@ -11,10 +11,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -30,11 +32,10 @@ import android.widget.Toast;
 
 import com.example.recordratings.misc.DatabaseHelper;
 import com.example.recordratings.misc.MovePage;
-import com.example.recordratings.misc.SettingsActivity;
 import com.example.recordratings.records.AddRecord;
 import com.example.recordratings.records.Records;
 import com.example.recordratings.records.RecordsAdapter;
-import com.example.recordratings.records.RecordsPage;
+import com.example.recordratings.settings.SettingsActivity;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -66,9 +67,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
 
+    private SharedPreferences shared;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(returnDark()){
+            setTheme(R.style.darkThemeNoBar);
+        }
         setContentView(R.layout.activity_main);
         setNavigationViewListener();
 
@@ -141,17 +148,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        dbDelButton = findViewById(R.id.delete_DB);
-        dbDelButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v){
-                for(int i = 1; i < 250; i++){
-                    Integer deletedRows = dbh.deleteData(Integer.toString(i));
-                }
-                adapter.notifyDataSetChanged();
-                finish();
-                startActivity(getIntent());
-            }
-        });
+//        dbDelButton = findViewById(R.id.delete_DB);
+//        dbDelButton.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v){
+//                for(int i = 1; i < 250; i++){
+//                    Integer deletedRows = dbh.deleteData(Integer.toString(i));
+//                }
+//                adapter.notifyDataSetChanged();
+//                finish();
+//                startActivity(getIntent());
+//            }
+//        });
     }
 
 
@@ -179,10 +186,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if(filter.getVisibility() == View.INVISIBLE){
+        if(returnDark()){
+//            Drawable draw = getResources().getDrawable(R.drawable.menu);
+//            draw.mutate().setColorFilter(getResources().getColor(colorWhite), PorterDuff.Mode.MULTIPLY);
             getMenuInflater().inflate(R.menu.menu_main, menu);
-        } else{
-            menu.findItem(R.id.action_favorite).setVisible(false);
+            for(int i = 0; i < menu.size(); i++){
+                Drawable drawable = menu.getItem(i).getIcon();
+                if(drawable != null) {
+                    drawable.mutate();
+                    drawable.setColorFilter(getResources().getColor(R.color.colorWhite), PorterDuff.Mode.SRC_ATOP);
+                }
+            }
+        }else{
+            getMenuInflater().inflate(R.menu.menu_main, menu);
         }
         return true;
     }
@@ -218,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             case R.id.settings:{
                 MovePage m = new MovePage();
+                finish();
                 m.moveActivity(MainActivity.this, SettingsActivity.class);
             }
             case R.id.quit_app:{
@@ -393,5 +410,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onBackPressed() {
         this.finishAffinity();
+    }
+
+    private boolean returnDark(){
+        shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
+        return shared.getBoolean("darkMode", false);
     }
 }

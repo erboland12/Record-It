@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -37,13 +38,19 @@ public class AddRecord extends AppCompatActivity {
     private Spinner genre;
 
     //Database declarations
-    DatabaseHelper dbh;
+    private DatabaseHelper dbh;
 
+    //Button declaration
     Button browseGalleryBtn;
+
+    private SharedPreferences shared;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(returnDark()){
+            setTheme(R.style.darkTheme);
+        }
         setContentView(R.layout.activity_add_record);
 
         //Input edit text values into global variables
@@ -132,6 +139,11 @@ public class AddRecord extends AppCompatActivity {
     // convert from byte array to bitmap
     public static Bitmap getImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
+    }
+
+    private boolean returnDark(){
+        shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
+        return shared.getBoolean("darkMode", false);
     }
 
 

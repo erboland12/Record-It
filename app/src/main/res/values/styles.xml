@@ -1,11 +1,82 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="MainTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="backgroundcolor">@color/colorWhite</item>
+        <item name="textcolor">@color/colorBlack</item>
+        <item name="tintcolor">@color/colorBlack</item>
+        <item name="buttoncolor">@color/colorPrimary</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="android:actionMenuTextColor">@color/colorBlack</item>
+        <item name="rvcolor">@color/colorWhite</item>
+        <item name="toolbarcolor">@color/colorPrimary</item>
+    </style>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="backgroundcolor">@color/colorWhite</item>
+        <item name="textcolor">@color/colorBlack</item>
+        <item name="tintcolor">@color/colorBlack</item>
+        <item name="buttoncolor">@color/colorPrimary</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="android:actionMenuTextColor">@color/colorBlack</item>
+        <item name="rvcolor">@color/colorWhite</item>
+        <item name="toolbarcolor">@color/colorPrimary</item>
+    </style>
+
+    <style name="darkTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/darkModeBack</item>
+        <item name="colorPrimaryDark">@color/colorBlack</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="backgroundcolor">@color/darkModeRealBack</item>
+        <item name="textcolor">@color/colorWhite</item>
+        <item name="tintcolor">@color/colorWhite</item>
+        <item name="buttoncolor">@color/colorButton</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="actionMenuTextColor">@color/colorWhite</item>
+        <item name="actionBarItemBackground">@color/colorBlack</item>
+        <item name="rvcolor">@color/darkModeBack</item>
+        <item name="toolbarcolor">@color/darkModeBack</item>
+    </style>
+
+    <style name="darkThemeNoBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/darkModeBack</item>
+        <item name="colorPrimaryDark">@color/colorBlack</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="backgroundcolor">@color/darkModeRealBack</item>
+        <item name="textcolor">@color/colorWhite</item>
+        <item name="tintcolor">@color/colorWhite</item>
+        <item name="buttoncolor">@color/colorButton</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="actionMenuTextColor">@color/colorWhite</item>
+        <item name="actionBarItemBackground">@color/colorBlack</item>
+        <item name="rvcolor">@color/darkModeBack</item>
+        <item name="toolbarcolor">@color/darkModeBack</item>
+    </style>
+
+    <style name="darkTheme.Preferences" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/darkModeBack</item>
+        <item name="colorPrimaryDark">@color/colorBlack</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="backgroundcolor">@color/darkModeRealBack</item>
+        <item name="textcolor">@color/colorWhite</item>
+        <item name="tintcolor">@color/colorWhite</item>
+        <item name="buttoncolor">@color/colorButton</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="actionMenuTextColor">@color/colorWhite</item>
+        <item name="actionBarItemBackground">@color/colorBlack</item>
+        <item name="rvcolor">@color/darkModeBack</item>
+        <item name="android:preferenceCategoryStyle">@color/colorWhite</item>
+        <item name="toolbarcolor">@color/darkModeBack</item>
     </style>
 
     <style name="FragTheme" parent="Theme.AppCompat.Light">

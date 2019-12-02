@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary">#FF143C</color>
+    <color name="colorPrimaryDark">#DC143C</color>
     <color name="colorAccent">#D81B60</color>
     <color name="gray">#D3D3D3</color>
     <color name="red">#ff0000</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="darkModeBack">#212121</color>
+    <color name="darkModeRealBack">#303030</color>
+    <color name="colorButton">#B19CD9</color>
+
 </resources>

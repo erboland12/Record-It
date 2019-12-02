@@ -9,13 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".settings.SettingsActivity"></activity>
         <activity
-            android:name=".misc.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
-        <activity android:name=".records.RecordsPage"
-                  android:theme="@style/FragTheme"/>
+            android:name=".records.RecordsPage"
+            android:theme="@style/FragTheme" />
         <activity android:name=".records.AddRecord" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+                  android:theme="@style/MainTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

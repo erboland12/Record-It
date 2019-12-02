@@ -10,7 +10,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="?attr/backgroundcolor">
 
         <include
             layout="@layout/toolbar"
@@ -21,48 +22,54 @@
             android:id="@+id/rvRecords"
             android:layout_width="341dp"
             android:layout_height="500dp"
+            android:background="?attr/backgroundcolor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.264" />
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+<!--        <LinearLayout-->
+<!--            android:id="@+id/linearLayout"-->
+<!--            android:layout_width="224dp"-->
+<!--            android:layout_height="83dp"-->
+<!--            android:background="?attr/backgroundcolor"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/rvRecords">-->
+
+
+
+<!--        </LinearLayout>-->
+
+        <Button
+            android:id="@+id/main_add_button"
+            android:layout_width="339dp"
+            android:layout_height="94dp"
+            android:layout_gravity="center"
+            android:shadowColor="@color/darkModeBack"
+            android:background="?attr/buttoncolor"
+            android:gravity="center"
+            android:text="@string/main_add_button"
+            android:textSize="44sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rvRecords">
-
-            <Button
-                android:id="@+id/main_add_button"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="@string/main_add_button" />
-
-            <Button
-                android:id="@+id/delete_DB"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/main_delete_button" />
-
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="@+id/rvRecords"
+            app:layout_constraintVertical_bias="0.265" />
 
         <TextView
             android:id="@+id/no_records"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textColor="?attr/textcolor"
             android:text="@string/no_items_in_rv"
             android:textSize="18sp"
             android:visibility="invisible"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintBottom_toTopOf="@+id/main_add_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.48"
             app:layout_constraintStart_toStartOf="parent"
@@ -76,6 +83,8 @@
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:background="?attr/backgroundcolor"
+        app:itemTextColor="?attr/textcolor"
         app:menu="@menu/menu_side"
         android:layout_gravity="start"
         android:fitsSystemWindows="true" />
