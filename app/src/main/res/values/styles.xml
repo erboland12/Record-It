@@ -85,6 +85,22 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.CustomWindowTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="backgroundcolor">@color/colorWhite</item>
+        <item name="textcolor">@color/colorBlack</item>
+        <item name="tintcolor">@color/colorBlack</item>
+        <item name="buttoncolor">@color/colorPrimary</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="android:actionMenuTextColor">@color/colorBlack</item>
+        <item name="rvcolor">@color/darkModeBack</item>
+        <item name="toolbarcolor">@color/darkModeBack</item>
+    </style>
+
 
 
 </resources>

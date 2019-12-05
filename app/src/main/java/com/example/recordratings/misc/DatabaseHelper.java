@@ -56,6 +56,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean updateData(int id, String album, String artist, float rating, byte[] photo, String genre, String description){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ALBUM, album);
+        contentValues.put(ARTIST, artist);
+        contentValues.put(RATING, rating);
+        contentValues.put(PHOTO, photo);
+        contentValues.put(GENRE, genre);
+        contentValues.put(DESCRIPTION, description);
+        int res = db.update(RECORDS_TABLE, contentValues,"ID = ?",new String[]{Integer.toString(id)});
+//        Cursor cursor = db.rawQuery("UPDATE " + RECORDS_TABLE + " SET ALBUM = '" + album + "', ARTIST = '" + artist + "', " +
+//                "RATING = " + rating + ", PHOTO = '" + photo + "', GENRE = '" + genre + "', DESCRIPTION = '" + description +
+//                "' WHERE ID = " + id, null);
+
+        return true;
+    }
+
     public Integer deleteData(String row) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(RECORDS_TABLE, "id=?", new String[]{row});

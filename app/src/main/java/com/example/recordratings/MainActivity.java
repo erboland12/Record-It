@@ -412,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.finishAffinity();
     }
 
-    private boolean returnDark(){
+    public boolean returnDark(){
         shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
         return shared.getBoolean("darkMode", false);
     }

@@ -38,7 +38,7 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
         rating.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-//                startActivity(new Intent(SettingsActivity.getContextOfApplication(), PopupRatingActivity.class));
+                startActivity(new Intent(SettingsActivity.getContextOfApplication(), PopupRatingActivity.class));
                 return false;
             }
         });
@@ -47,7 +47,7 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
         feedback.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-//                startActivity(new Intent(SettingsActivity.getContextOfApplication(), PopupFeedbackActivity.class));
+                startActivity(new Intent(SettingsActivity.getContextOfApplication(), PopupFeedbackActivity.class));
                 return false;
             }
         });

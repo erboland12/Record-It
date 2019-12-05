@@ -10,5 +10,7 @@
     <color name="darkModeBack">#212121</color>
     <color name="darkModeRealBack">#303030</color>
     <color name="colorButton">#B19CD9</color>
+    <color name="colorGreenBack">#32cd32</color>
+
 
 </resources>

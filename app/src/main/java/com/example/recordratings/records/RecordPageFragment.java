@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -36,11 +37,13 @@ public class RecordPageFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     //Text View for album and artist names
+    private LinearLayout layout;
     private TextView album;
     private TextView artist;
     private ImageView photo;
     private RatingBar rating;
     private TextView description;
+    private View view1;
 
     //Front-end variables
     public static int idTemp;
@@ -53,6 +56,7 @@ public class RecordPageFragment extends Fragment {
 
     //Buttons
     private Button delBtn;
+    private Button editBtn;
     private MovePage m;
 
     //Database helper
@@ -63,6 +67,8 @@ public class RecordPageFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    public static boolean isDark = false;
 
     public RecordPageFragment() {
         // Required empty public constructor
@@ -105,6 +111,26 @@ public class RecordPageFragment extends Fragment {
 
         dbh = new DatabaseHelper(getContext());
         delBtn = view.findViewById(R.id.records_page_delete_btn);
+        editBtn = view.findViewById(R.id.records_page_edit_btn);
+        layout = view.findViewById(R.id.record_page_layout);
+        view1 = view.findViewById(R.id.view);
+
+
+        editBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), EditRecord.class));
+                getActivity().finish();
+                EditRecord.idTemp = idTemp;
+                EditRecord.albumTemp = albumTemp;
+                EditRecord.photoTemp = photoTemp;
+                EditRecord.artistTemp = artistTemp;
+                EditRecord.genreTemp = genreTemp;
+                EditRecord.descTemp = descTemp;
+                EditRecord.ratingTemp = ratingTemp;
+            }
+        });
+
         delBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,7 +139,17 @@ public class RecordPageFragment extends Fragment {
                 getActivity().finish();
             }
         });
+
         setDetailViewVariables(view);
+        if(isDark) {
+            view1.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+            delBtn.setBackgroundColor(getResources().getColor(R.color.colorButton));
+            editBtn.setBackgroundColor(getResources().getColor(R.color.colorButton));
+            album.setTextColor(getResources().getColor(R.color.colorWhite));
+            artist.setTextColor(getResources().getColor(R.color.colorWhite));
+            description.setTextColor(getResources().getColor(R.color.colorWhite));
+            layout.setBackgroundColor(getResources().getColor(R.color.darkModeRealBack));
+        }
         return view;
     }
 

@@ -1,6 +1,7 @@
 package com.example.recordratings.records;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
@@ -20,35 +21,17 @@ import com.example.recordratings.R;
 
 public class RecordsPage extends AppCompatActivity {
 
-    //Text View for album and artist names
-    TextView album;
-    TextView artist;
-    ImageView photo;
-    RatingBar rating;
-    TextView description;
-
-    //Placeholders for recycler view variables
-    public static int idTemp;
-    public static String albumTemp;
-    public static String artistTemp;
-    public static double ratingTemp;
-    public static String genreTemp;
-    public static String descTemp;
-    public static Bitmap photoTemp;
-
-    //Buttons
-    private Button delBtn;
-    MovePage m;
-
-    //Database helper
-    DatabaseHelper dbh;
-
     //Fragment
-    Fragment myFragment;
+    private Fragment myFragment;
+    private SharedPreferences shared;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(returnDark()){
+            setTheme(R.style.darkTheme);
+            RecordPageFragment.isDark = true;
+        }
         setTitle("");
         setContentView(R.layout.activity_records_page);
 
@@ -63,5 +46,10 @@ public class RecordsPage extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
         startActivity(new Intent(RecordsPage.this, MainActivity.class));
         finish();
+    }
+
+    private boolean returnDark(){
+        shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
+        return shared.getBoolean("darkMode", false);
     }
 }
