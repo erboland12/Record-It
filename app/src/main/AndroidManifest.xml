@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.recordratings">
 
-    <uses-permission android:name="android.permission.SEND_SMS"></uses-permission>
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,7 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".settings.PopupRatingActivity"></activity>
+        <activity android:name=".ProfileActivity"
+            android:theme="@style/MainTheme"></activity>
+        <activity android:name=".MyRecordsActivity" />
+        <activity android:name=".credentials.SignInActivity" />
+        <activity android:name=".credentials.LoginActivity" />
+        <activity android:name=".settings.PopupRatingActivity" />
         <activity android:name=".settings.PopupFeedbackActivity" />
         <activity android:name=".records.EditRecord" />
         <activity android:name=".settings.SettingsActivity" />
@@ -29,5 +32,7 @@
             </intent-filter>
         </activity>
     </application>
+
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
 </manifest>

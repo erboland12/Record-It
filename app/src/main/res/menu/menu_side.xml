@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/login"
+        android:title="Log In">
+    </item>
+    <item
+        android:id="@+id/my_profile"
+        android:title="My Profile">
+
+    </item>
+    <item
+        android:id="@+id/my_records"
+        android:title="My Records">
+    </item>
+    <item
         android:id="@+id/menu_add_record"
         android:title="Add Record">
     </item>
+
     <item
         android:id="@+id/settings"
         android:title="Settings">
     </item>
+    <item android:id="@+id/log_out"
+        android:title="Sign Out"/>
     <item
         android:id="@+id/quit_app"
         android:title="Close App">

@@ -3,14 +3,20 @@
     <color name="colorPrimary">#FF143C</color>
     <color name="colorPrimaryDark">#DC143C</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="gray">#D3D3D3</color>
-    <color name="red">#ff0000</color>
+    <color name="gray">#FFf6f5ff</color>
+    <color name="red">#99ff0000</color>
+    <color name="redClick">#ff0000</color>
     <color name="colorBlack">#000000</color>
-    <color name="colorWhite">#ffffff</color>
+    <color name="colorWhite">#F8F8FF</color>
     <color name="darkModeBack">#212121</color>
     <color name="darkModeRealBack">#303030</color>
     <color name="colorButton">#B19CD9</color>
-    <color name="colorGreenBack">#32cd32</color>
+    <color name="colorGreenBack">#9932cd32</color>
+    <color name="colorGreenClick">#32cd32</color>
+    <color name="linkColor">#990000EE</color>
+    <color name="hintDarkModeColor">#99ffffff</color>
+    <color name="signUpLinkDarkMode">#9900FFEE</color>
+
 
 
 </resources>

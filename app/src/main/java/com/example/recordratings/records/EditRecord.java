@@ -1,5 +1,6 @@
 package com.example.recordratings.records;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,6 +24,13 @@ import com.example.recordratings.MainActivity;
 import com.example.recordratings.R;
 import com.example.recordratings.misc.DatabaseHelper;
 import com.example.recordratings.misc.MovePage;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -38,7 +46,6 @@ public class EditRecord extends AppCompatActivity {
     private RatingBar rating;
     private Spinner genre;
 
-
     public static int idTemp;
     public static String albumTemp;
     public static String artistTemp;
@@ -46,6 +53,7 @@ public class EditRecord extends AppCompatActivity {
     public static String genreTemp;
     public static String descTemp;
     public static Bitmap photoTemp;
+    public static String photoStringTemp;
 
     public static Bitmap photoFinal;
 
@@ -55,7 +63,14 @@ public class EditRecord extends AppCompatActivity {
     //Button declaration
     private Button browseGalleryBtn;
     private Button mSubmitBtn;
+
+
     private SharedPreferences shared;
+    private FirebaseDatabase database;
+    private StorageReference mStorageRef;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private com.google.firebase.database.DatabaseReference dbRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +91,12 @@ public class EditRecord extends AppCompatActivity {
         artistName.setText(artistTemp);
         description.setText(descTemp);
         rating.setRating((float) ratingTemp);
+
+        //Sets up Firebase
+        database = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        mStorageRef = FirebaseStorage.getInstance().getReference();
 
         //Adds options to Spinner
         String[] items = new String[]{"Pop", "Rock", "Jazz", "Blues", "Rap", "Country", "Folk",
@@ -134,7 +155,15 @@ public class EditRecord extends AppCompatActivity {
                             description.getText().toString());
 
                     if(res){
-                        Toast.makeText(v.getContext(), Integer.toString(idTemp), Toast.LENGTH_SHORT).show();
+                        String album = albumName.getText().toString();
+                        String artist = artistName.getText().toString();
+                        double rating2 = rating.getRating();
+                        String photoUrl = photoStringTemp;
+                        String genre2 = genre.getSelectedItem().toString();
+                        String desc = description.getText().toString();
+//                        Records newRecord = new Records(0, album, artist, rating2, photoUrl, genre2, desc);
+
+//                        db.collection("records").document(get)
                         startActivity(new Intent(EditRecord.this, MainActivity.class));
                     }else{
                         Toast.makeText(v.getContext(), "Something went wrong.  Please check your fields.", Toast.LENGTH_SHORT).show();
@@ -159,10 +188,23 @@ public class EditRecord extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             try {
                 final Uri imageUri = data.getData();
+                final StorageReference ref = mStorageRef.child(data.getDataString());
+                ref.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
+                        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Uri downloadUri = uri;
+                                photoStringTemp = downloadUri.toString();
+                            }
+                        });
+//                        Uri downloadUrl = taskSnapshot.getStorage().get
+//                        photoToString = downloadUrl.toString();
+                    }
+                });
                 final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                 final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                photoFinal = selectedImage;
-                Toast.makeText(this, "Image selected", Toast.LENGTH_SHORT).show();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();

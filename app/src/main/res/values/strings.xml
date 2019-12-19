@@ -21,7 +21,20 @@
     <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="title_activity_settings">Settings</string>
-    <string name="no_items_in_rv">You have not rated any records yet.  Press Rate a Record down below to add one!</string>
+    <string name="no_items_in_rv">You have not rated any records yet.  Go to Add Record on the menu to get started!</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="signup">No Account Yet?  <u>Sign Up Here</u></string>
+    <string name="login">Log In</string>
+    <string name="forgotpw">Forgot Password</string>
+    <string name="display">Display Name</string>
+    <string name="confirm">Confirm Password</string>
+    <string name="submit">Submit</string>
+    <string name="profile_pic">Select Profile Picture</string>
+    <string name="menu_sub">Welcome back,</string>
+    <string name="comment">Comment</string>
+    <string name="add_comment">Add a Comment...</string>
+    <string name="total_comments">Total Comments: </string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

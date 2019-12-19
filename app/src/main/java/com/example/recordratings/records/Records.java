@@ -2,28 +2,41 @@ package com.example.recordratings.records;
 
 import android.graphics.Bitmap;
 
+import com.google.firebase.firestore.Blob;
+
 import java.util.ArrayList;
 
 public class Records {
-    private int mId;
+    private String mId;
     private String mTitle;
     private String mArtist;
     private double mRating;
     private Bitmap mPhoto;
+    private String mPhotoString;
     private String mGenre;
     private String mDescription;
+    private String mRecId;
 
-    public Records(Integer id, String title, String artist, double rating, Bitmap photo, String genre, String description){
+    public Records() {}
+
+    public Records(String id, String title, String artist){
+        mId = id;
+        mTitle = title;
+        mArtist = artist;
+    }
+
+    public Records(String id, String title, String artist, double rating, String photo, String genre, String description, String recId){
         mId = id;
         mTitle = title;
         mArtist = artist;
         mRating = rating;
-        mPhoto = photo;
+        mPhotoString = photo;
         mGenre = genre;
         mDescription = description;
+        mRecId = recId;
     }
 
-    public int getId() { return mId; }
+    public String getId() { return mId; }
 
     public String getTitle(){
         return mTitle;
@@ -41,6 +54,8 @@ public class Records {
         return mPhoto;
     }
 
+    public String getmPhotoString() { return mPhotoString; }
+
     public String getGenre(){
         return mGenre;
     }
@@ -49,16 +64,6 @@ public class Records {
         return mDescription;
     }
 
-    public static ArrayList<Records> createRecordsList(int x, Records r){
-        ArrayList<Records> recordsList = new ArrayList<>();
-        for(int i = 0; i < x; i++){
-            recordsList.add(new Records(r.getId(), r.getTitle(), r.getArtist(), r.getRating(), r.getPhoto(), r.getGenre(), r.getDesc()));
-        }
-        return recordsList;
-    }
+    public String getRecId(){ return mRecId; }
 
-    public static ArrayList<Records> addRecord(ArrayList<Records> list, Records r){
-        list.add(r);
-        return list;
-    }
 }

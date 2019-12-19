@@ -9,126 +9,188 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <LinearLayout
-        android:id="@+id/record_page_layout"
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/records_page_Album"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="10pt"
-            android:textSize="35dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.049" />
-
-        <TextView
-            android:id="@+id/records_page_artist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="5pt"
-            android:text="TextView"
-            android:textSize="25dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/records_page_Album"
-            app:layout_constraintVertical_bias="0.055" />
-
-        <View
-            android:id="@+id/view"
-            android:background="@color/colorBlack"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="5pt"
-            android:layout_marginLeft="20pt"
-            android:layout_marginRight="20pt"/>
-
-        <ImageView
-            android:id="@+id/records_page_image"
-            android:layout_width="235dp"
-            android:layout_height="262dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="5pt"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/records_page_artist"
-            app:layout_constraintVertical_bias="0.068"
-            tools:srcCompat="@tools:sample/avatars" />
-
-        <RatingBar
-            android:id="@+id/records_page_rating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:isIndicator="true"
-            android:layout_gravity="center"
-            android:layout_marginTop="5pt"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/records_page_image"
-            app:layout_constraintVertical_bias="0.148" />
-
-        <TextView
-            android:id="@+id/records_page_desc"
-            android:layout_width="366dp"
-            android:layout_height="27dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="5pt"
-            android:ems="10"
-            android:gravity="center"
-            android:inputType="textMultiLine"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/records_page_rating"
-            app:layout_constraintVertical_bias="0.288" />
 
         <LinearLayout
-            android:layout_width="375dp"
-            android:layout_height="109dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="10pt"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:id="@+id/record_page_layout"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/records_page_edit_btn"
+            <ImageView
+                android:id="@+id/records_page_image"
+                android:layout_width="235dp"
+                android:layout_height="262dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5pt"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/records_page_Album"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="10pt"
-                android:layout_marginRight="5pt"
-                android:layout_marginBottom="10pt"
-                android:gravity="center"
-                android:text="@string/edit" />
+                android:layout_marginTop="5pt"
+                android:textSize="40dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.049" />
 
-            <Button
-                android:id="@+id/records_page_delete_btn"
+            <TextView
+                android:id="@+id/records_page_artist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginTop="5pt"
+                android:textSize="30dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/records_page_Album"
+                app:layout_constraintVertical_bias="0.055" />
+
+            <View
+                android:id="@+id/view"
+                android:background="@color/colorBlack"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5pt"
                 android:layout_marginLeft="5pt"
-                android:layout_marginTop="10pt"
-                android:layout_marginBottom="10pt"
-                android:gravity="center"
-                android:text="@string/main_delete_button" />
+                android:layout_marginRight="5pt"/>
+
+            <RatingBar
+                android:id="@+id/records_page_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:isIndicator="true"
+                android:layout_gravity="center"
+                android:layout_marginTop="5pt"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.497"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/records_page_image"
+                app:layout_constraintVertical_bias="0.148" />
+
+            <TextView
+                android:id="@+id/records_page_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20pt"
+                android:layout_marginTop="5pt"
+                android:layout_marginLeft="10pt"
+                android:layout_marginRight="10pt"
+                android:background="@drawable/layout_border"
+                android:ems="10"
+                android:padding="10dp"
+                android:gravity="left"
+                android:textColor="@color/colorBlack"
+                android:textSize="20sp"/>
+
+
+
+            <View
+                android:id="@+id/view2"
+                android:background="@color/colorBlack"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5pt" />
+
+            <LinearLayout
+                android:id="@+id/add_comment_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/total_comments"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:padding="10dp"
+                    android:text="@string/total_comments"/>
+
+                <Spinner
+                    android:id="@+id/sort_comments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="80pt"
+                    android:paddingStart="6dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3pt"
+                    android:layout_marginEnd="5pt"
+                    android:orientation="horizontal">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/comment_pic"
+                        android:layout_width="80dp"
+                        android:layout_height="88dp"
+                        android:layout_gravity="start"
+                        android:padding="5dp"
+                        android:src="@drawable/profile" />
+
+                    <EditText
+                        android:id="@+id/comment_box"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLength="250"
+                        android:hint="@string/add_comment"
+                        android:gravity="start"/>
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/comment_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginEnd="5pt"
+                    android:clickable="false"
+                    android:enabled="false"
+                    android:text="@string/comment"/>
+
+                <TextView
+                    android:id="@+id/comment_char_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="15pt"
+                    android:layout_gravity="end"
+                    android:visibility="invisible"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rvLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="@color/gray">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvComments"
+                    android:layout_width="wrap_content"
+                    android:minHeight="450dp"
+                    android:layout_height="450dp"
+                    android:scrollbars="vertical"
+                    android:background="@drawable/rv_light_border"/>
+
+            </LinearLayout>
+
 
         </LinearLayout>
 
-
-    </LinearLayout>
-
+    </ScrollView>
 
 </FrameLayout>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundcolor"
+    tools:context=".credentials.LoginActivity">
+
+    <LinearLayout
+        android:id="@+id/signUpLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10pt"
+        android:layout_marginRight="10pt"
+        android:background="@drawable/login_bg"
+        android:orientation="vertical"
+        android:padding="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.302">
+
+
+
+        <EditText
+            android:id="@+id/emailText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="?attr/textcolor"
+            android:hint="@string/email"
+            android:textColor="?attr/textcolor"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/displayNameText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="?attr/textcolor"
+            android:hint="@string/display"
+            android:textColor="?attr/textcolor"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/passText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="?attr/textcolor"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:textColor="?attr/textcolor"
+            android:textSize="24dp" />
+
+        <EditText
+            android:id="@+id/confirmPwTest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="?attr/textcolor"
+            android:hint="@string/confirm"
+            android:inputType="textPassword"
+            android:textColor="?attr/textcolor"
+            android:textSize="24dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/sign_up_img_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5pt"
+            android:src="@drawable/profile"/>
+
+
+        <Button
+            android:id="@+id/sign_up_select_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10pt"
+            android:layout_marginEnd="10pt"
+            android:text="@string/profile_pic"/>
+
+
+        <Button
+            android:id="@+id/sign_up_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10pt"
+            android:background="?attr/buttoncolor"
+            android:text="@string/submit" />
+
+
+    </LinearLayout>
+
+
+</ScrollView>

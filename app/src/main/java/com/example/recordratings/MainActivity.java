@@ -11,12 +11,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -25,26 +27,58 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.recordratings.credentials.LoginActivity;
 import com.example.recordratings.misc.DatabaseHelper;
 import com.example.recordratings.misc.MovePage;
 import com.example.recordratings.records.AddRecord;
 import com.example.recordratings.records.Records;
 import com.example.recordratings.records.RecordsAdapter;
 import com.example.recordratings.settings.SettingsActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.annotation.Nullable;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     //Records global
     public RecyclerView rvRecords;
     public static ArrayList<Records> records = new ArrayList<>();
+    private ArrayList<Records> tempRecords = new ArrayList<>();
     private TextView emptyRv;
+    private View hView;
+    private CircleImageView menuPic;
+    private TextView menuSub;
+    private String tempName;
 
     //Intent module call
     MovePage m = new MovePage();
@@ -67,7 +101,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
 
+    NavigationView navView;
+
     private SharedPreferences shared;
+    private FirebaseAuth mAuth;
+    private com.google.firebase.firestore.FirebaseFirestore db;
 
 
     @Override
@@ -85,6 +123,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Sets up DrawerLayout and ActionBar
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
+        navView = findViewById(R.id.nav_view);
+
+        hView = navView.inflateHeaderView(R.layout.nav_header);
 
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
@@ -106,9 +147,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         search = findViewById(R.id.action_search);
         filter = findViewById(R.id.filter_spinner);
 
+        search.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                filter("Test");
+            }
+        });
+
         //Makes initial call to load db contents into RV and creates listener for only showing
         //filter when search icon is clicked.
-        searchRV();
 
         search.setOnSearchClickListener(new View.OnClickListener(){
             @Override
@@ -126,10 +173,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
 
-        showDB();
-
         populateFilter();
 
+        searchRV();
 
         rvRecords.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -148,47 +194,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-//        dbDelButton = findViewById(R.id.delete_DB);
-//        dbDelButton.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v){
-//                for(int i = 1; i < 250; i++){
-//                    Integer deletedRows = dbh.deleteData(Integer.toString(i));
-//                }
-//                adapter.notifyDataSetChanged();
-//                finish();
-//                startActivity(getIntent());
-//            }
-//        });
     }
 
 
-    public void showDB(){
-//        Button b = findViewById(R.id.add_DB);
-//        b.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Cursor res = dbh.getAllData();
-//                StringBuffer buffer = new StringBuffer();
-//                while(res.moveToNext()){
-//                    buffer.append("ID :" + res.getString(0) + "\n");
-//                    buffer.append("ALBUM :" + res.getString(1) + "\n");
-//                    buffer.append("ARTIST :" + res.getString(2) + "\n");
-//                    buffer.append("RATING :" + res.getDouble(3) + "\n");
-//                    buffer.append("GENRE :" + res.getString(5) + "\n");
-//                    buffer.append("DESCRIPTION :" + res.getString(6) + "\n");
-//                }
-//
-//                showMessage("Data", buffer.toString());
-//            }
-//        });
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        invalidateOptionsMenu();
         if(returnDark()){
-//            Drawable draw = getResources().getDrawable(R.drawable.menu);
-//            draw.mutate().setColorFilter(getResources().getColor(colorWhite), PorterDuff.Mode.MULTIPLY);
             getMenuInflater().inflate(R.menu.menu_main, menu);
             for(int i = 0; i < menu.size(); i++){
                 Drawable drawable = menu.getItem(i).getIcon();
@@ -200,6 +214,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }else{
             getMenuInflater().inflate(R.menu.menu_main, menu);
         }
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
         return true;
     }
 
@@ -227,9 +248,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
+            case R.id.login:{
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                break;
+            }
             case R.id.menu_add_record: {
                 MovePage m = new MovePage();
-                m.moveActivity(MainActivity.this, AddRecord.class);
+                if(mAuth.getCurrentUser() != null){
+                    m.moveActivity(MainActivity.this, AddRecord.class);
+                }else{
+                    Toast.makeText(this, "You Must be Logged In to Add a Record.", Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+            case R.id.my_records:{
+                if(mAuth.getCurrentUser() != null){
+                    startActivity(new Intent(MainActivity.this, MyRecordsActivity.class));
+                }else{
+                    Toast.makeText(this, "You Must be Logged In to View your Records.", Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+            case R.id.my_profile: {
+                MovePage m = new MovePage();
+                if(mAuth.getCurrentUser() != null){
+                    ProfileActivity.uid = mAuth.getCurrentUser().getUid();
+                    startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                }else{
+                    Toast.makeText(this, "You Must be Logged In to View the Profile Page.", Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+            case R.id.log_out:{
+                mAuth.signOut();
+                startActivity(new Intent(MainActivity.this, MainActivity.class));
+                Toast.makeText(this, "You Have Been Logged Out.", Toast.LENGTH_LONG).show();
                 break;
             }
             case R.id.settings:{
@@ -252,125 +305,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-//    @Override
-//    public boolean onPrepareOptionsMenu (Menu menu) {
-//        if (filter.getVisibility() == View.INVISIBLE) {
-//            menu.findItem(R.id.action_favorite).setVisible(true);
-//        } else if (filter.getVisibility() == View.VISIBLE){
-//            menu.findItem(R.id.action_favorite).setVisible(false);
-//        }
-//        super.onPrepareOptionsMenu(menu);
-//        return true;
-//    }
-
-
-    public void showMessage(String title, String message){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(message);
-        builder.show();
-    }
-
     //Performs filter on database
     private void filter(CharSequence text){
-        Cursor cursor = dbh.getAllData();
-        if (cursor.moveToFirst()) {
-            do {
-                if (filter.getSelectedItem().toString() == "Album"){
-                    if (cursor.getString(1).toLowerCase().contains(text)) {
-                        Log.d(text.toString(), "Match");
-                        records.add(new Records(
-                                cursor.getInt(0),
-                                cursor.getString(1),
-                                cursor.getString(2),
-                                cursor.getDouble(3),
-                                getImage(cursor.getBlob(4)),
-                                cursor.getString(5),
-                                cursor.getString(6)
-                        ));
-                    }
-                }
-                if (filter.getSelectedItem().toString() == "Artist"){
-                    if (cursor.getString(2).toLowerCase().contains(text)) {
-                        Log.d(text.toString(), "Match");
-                        records.add(new Records(
-                                cursor.getInt(0),
-                                cursor.getString(1),
-                                cursor.getString(2),
-                                cursor.getDouble(3),
-                                getImage(cursor.getBlob(4)),
-                                cursor.getString(5),
-                                cursor.getString(6)
-                        ));
-                    }
-                }
-                if (filter.getSelectedItem().toString() == "Genre"){
-                    if (cursor.getString(5).toLowerCase().contains(text)) {
-                        Log.d(text.toString(), "Match");
-                        records.add(new Records(
-                                cursor.getInt(0),
-                                cursor.getString(1),
-                                cursor.getString(2),
-                                cursor.getDouble(3),
-                                getImage(cursor.getBlob(4)),
-                                cursor.getString(5),
-                                cursor.getString(6)
-                        ));
-                    }
-                }
-                if (filter.getSelectedItem().toString() == "No Filter") {
-                    if (cursor.getString(5).toLowerCase().contains(text) ||
-                            cursor.getString(1).toLowerCase().contains(text) ||
-                            cursor.getString(2).toLowerCase().contains(text)) {
-                        Log.d(text.toString(), "Match");
-                        records.add(new Records(
-                                cursor.getInt(0),
-                                cursor.getString(1),
-                                cursor.getString(2),
-                                cursor.getDouble(3),
-                                getImage(cursor.getBlob(4)),
-                                cursor.getString(5),
-                                cursor.getString(6)
-                        ));
-                    }
-                }
-            } while (cursor.moveToNext());
-            adapter = new RecordsAdapter(records);
-            rvRecords.setAdapter(adapter);
-            rvRecords.setLayoutManager(new LinearLayoutManager(this));
-            adapter.notifyDataSetChanged();
-            records = new ArrayList<>();
 
-        }
-    }
-
-    //Loads content of RV from database entries
-    public void loadRV(){
-        Cursor cursor = dbh.getAllData();
-        if(cursor.getCount() > 0){
-            if (cursor.moveToNext()) {
-                do {
-                    records.add(new Records(
-                            cursor.getInt(0),
-                            cursor.getString(1),
-                            cursor.getString(2),
-                            cursor.getDouble(3),
-                            getImage(cursor.getBlob(4)),
-                            cursor.getString(5),
-                            cursor.getString(6)
-                    ));
-                } while (cursor.moveToNext());
-                rvRecords.setAdapter(adapter);
-                rvRecords.setLayoutManager(new LinearLayoutManager(this));
-                adapter.notifyDataSetChanged();
-                records = new ArrayList<>();
+        tempRecords.addAll(records);
+        records = new ArrayList<>();
+        for(Records record: tempRecords){
+            if(filter.getSelectedItem().toString() == "No Filter"){
+                if(record.getTitle().toLowerCase().contains(text) || record.getArtist().toLowerCase().contains(text) ||
+                   record.getGenre().toLowerCase().contains(text)){
+                    records.add(record);
+                }
             }
-        } else{
-            emptyRv.setVisibility(View.VISIBLE);
+            if(filter.getSelectedItem().toString() == "Album"){
+                if(record.getTitle().toLowerCase().contains(text)){
+                    records.add(record);
+                }
+            }
+            if(filter.getSelectedItem().toString() == "Artist"){
+                if(record.getArtist().toLowerCase().contains(text)){
+                    records.add(record);
+                }
+            }
+            if(filter.getSelectedItem().toString() == "Genre"){
+                if(record.getGenre().toLowerCase().contains(text)){
+                    records.add(record);
+                }
+            }
         }
+        adapter = new RecordsAdapter(records);
+        rvRecords.setAdapter(adapter);
+        rvRecords.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        adapter.notifyDataSetChanged();
+        records = new ArrayList<>();
 
     }
+
 
     //Filters Recycler View based on search input
     public void searchRV(){
@@ -390,7 +360,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
         });
-        loadRV();
     }
 
     private void populateFilter(){
@@ -415,5 +384,63 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean returnDark(){
         shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
         return shared.getBoolean("darkMode", false);
+    }
+
+    public void readFromDatabase(final FirebaseUser user){
+        db = FirebaseFirestore.getInstance();
+        records = new ArrayList<>();
+        db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                for (DocumentSnapshot document : queryDocumentSnapshots) {
+                    String id = document.get("id").toString();
+                    String album = document.getString("title");
+                    String artist = document.getString("artist");
+                    Double rating = document.getDouble("rating");
+                    String photo = document.getString("mPhotoString");
+                    String genre = document.getString("genre");
+                    String desc = document.getString("desc");
+                    String recId = "test";
+                    records.add(new Records(id, album, artist, rating, photo, genre, desc, recId));
+                }
+                adapter = new RecordsAdapter(records);
+                rvRecords.setAdapter(adapter);
+                rvRecords.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                adapter.notifyDataSetChanged();
+
+            }
+        });
+
+        db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                for (DocumentSnapshot doc: queryDocumentSnapshots){
+                    if(user != null){
+                        if(doc.getString("mId").equals(user.getUid())){
+                            Uri uri = Uri.parse(doc.getString("mPhotoUrl"));
+                            Picasso.get().load(uri).into(menuPic);
+                            String dn = user.getDisplayName();
+                            menuSub.append(" " + dn);
+                            return;
+                        }
+                    }else{
+                        menuSub.setText("Not Logged In");
+                    }
+                }
+            }
+        });
+        records = new ArrayList<>();
+        tempRecords = new ArrayList<>();
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        mAuth = FirebaseAuth.getInstance();
+        menuPic = hView.findViewById(R.id.menu_picture);
+        menuSub = hView.findViewById(R.id.menu_sub);
+        menuSub.setText("Welcome Back,");
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        readFromDatabase(currentUser);
     }
 }
