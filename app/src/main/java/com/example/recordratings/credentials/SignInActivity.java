@@ -90,6 +90,9 @@ public class SignInActivity extends AppCompatActivity {
 
 
                 if(verifyCredentials(email, displayName, password, confirm)){
+                    if(mAuth != null){
+                        mAuth.signOut();
+                    }
                     mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult authResult) {

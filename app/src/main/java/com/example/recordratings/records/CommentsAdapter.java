@@ -14,11 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.recordratings.ProfileActivity;
+import com.example.recordratings.credentials.ProfileActivity;
 import com.example.recordratings.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,6 +44,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
 
     public static int rvPosition;
     public static String commentSelection = " ";
+    public static boolean isDark;
 
     private InputMethodManager imm;
 
@@ -98,8 +97,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             }
 
         }
-        private boolean returnDark(){
+        public boolean returnDark(){
             shared = itemView.getContext().getSharedPreferences("DarkMode", MODE_PRIVATE);
+            isDark = shared.getBoolean("darkMode", false);
             return shared.getBoolean("darkMode", false);
         }
 
@@ -162,7 +162,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
                 replyImageView.setVisibility(View.INVISIBLE);
             }
         }
-
         replyImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

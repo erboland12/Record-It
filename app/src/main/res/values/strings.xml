@@ -25,6 +25,7 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="signup">No Account Yet?  <u>Sign Up Here</u></string>
+    <string name="forgot_pw">Forgot Your Password? <u>Click Here</u></string>
     <string name="login">Log In</string>
     <string name="forgotpw">Forgot Password</string>
     <string name="display">Display Name</string>
@@ -35,6 +36,13 @@
     <string name="comment">Comment</string>
     <string name="add_comment">Add a Comment...</string>
     <string name="total_comments">Total Comments: </string>
+    <string name="dialog_message">Edit Profile</string>
+    <string name="dialog_title">Edit Stuff</string>
+    <string name="edit_profile_pic">Change Profile Picture</string>
+    <string name="edit_bio">Edit Your Bio...</string>
+    <string name="edit_apply">Apply</string>
+    <string name="edit_cancel">Cancel</string>
+    <string name="check_email_header">Enter Your Email Address for a Validation Message</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

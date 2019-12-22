@@ -202,7 +202,6 @@ public class RecordPageFragment extends Fragment {
         adapter = new CommentsAdapter(comments);
         rvComments.setAdapter(adapter);
         rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
-        rvComments.getLayoutManager().scrollToPosition(CommentsAdapter.rvPosition - 1);
 
         String[] sorts = {"Recently Added", "Highest Rated"};
         selectionAdapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_dropdown_item, sorts);
@@ -457,7 +456,6 @@ public class RecordPageFragment extends Fragment {
                     adapter = new CommentsAdapter(comments);
                     rvComments.setAdapter(adapter);
                     rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
-                    rvComments.getLayoutManager().scrollToPosition(CommentsAdapter.rvPosition - 1);
                     adapter.notifyDataSetChanged();
                     totalComs.setText("Total Comments: " + adapter.getItemCount());
                     comments = new ArrayList<>();
@@ -486,7 +484,6 @@ public class RecordPageFragment extends Fragment {
                     adapter = new CommentsAdapter(comments);
                     rvComments.setAdapter(adapter);
                     rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
-                    rvComments.getLayoutManager().scrollToPosition(CommentsAdapter.rvPosition - 1);
                     adapter.notifyDataSetChanged();
                     totalComs.setText("Total Comments: " + adapter.getItemCount());
                     comments = new ArrayList<>();

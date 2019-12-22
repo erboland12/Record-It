@@ -6,7 +6,7 @@
     android:id="@+id/menu_id">
 
     <item
-        android:id="@+id/action_favorite"
+        android:id="@+id/action_fav"
         android:orderInCategory="300"
         android:title="User"
         android:icon="@drawable/edit"
