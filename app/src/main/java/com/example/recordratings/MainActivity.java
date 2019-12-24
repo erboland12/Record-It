@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.example.recordratings.credentials.LoginActivity;
 import com.example.recordratings.credentials.ProfileActivity;
+import com.example.recordratings.misc.Censor;
 import com.example.recordratings.misc.DatabaseHelper;
 import com.example.recordratings.misc.MovePage;
 import com.example.recordratings.records.AddRecord;
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     NavigationView navView;
 
-    private SharedPreferences shared;
+    private SharedPreferences shared, censorSP;
     private FirebaseAuth mAuth;
     private com.google.firebase.firestore.FirebaseFirestore db;
 
@@ -371,12 +372,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return shared.getBoolean("darkMode", false);
     }
 
+    public boolean returnCensor(){
+        censorSP = getSharedPreferences("censorPrefs", MODE_PRIVATE);
+        return censorSP.getBoolean("censorOff", false);
+    }
+
     public void readFromDatabase(final FirebaseUser user){
         db = FirebaseFirestore.getInstance();
         records = new ArrayList<>();
         db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                Censor censor = new Censor();
                 for (DocumentSnapshot document : queryDocumentSnapshots) {
                     String id = document.get("id").toString();
                     String album = document.getString("title");

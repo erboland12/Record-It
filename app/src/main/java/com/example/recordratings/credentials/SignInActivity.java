@@ -10,19 +10,27 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.recordratings.MainActivity;
 import com.example.recordratings.R;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -95,7 +103,7 @@ public class SignInActivity extends AppCompatActivity {
                     }
                     mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
-                        public void onSuccess(AuthResult authResult) {
+                        public void onSuccess(final AuthResult authResult) {
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(displayName).build();
@@ -105,15 +113,43 @@ public class SignInActivity extends AppCompatActivity {
                             if(photoToString.isEmpty()) {
                                 photoToString = "https://firebasestorage.googleapis.com/v0/b/record-ratings.appspot.com/o/content%3A%2Fcom.android.providers.media.documents%2Fdocument%2Fimage%253A906?alt=media&token=db7295d0-c0c1-4c33-b512-d0a43f7156e4";
                             }
-                            User newUser = new User(authResult.getUser().getUid(), email, displayName, photoToString, "Empty");
-                            db.collection("users").add(newUser)
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                        @Override
-                                        public void onSuccess(DocumentReference documentReference) {
-                                            Toast.makeText(getApplicationContext(), "Registration Successful", Toast.LENGTH_SHORT).show();
-                                            startActivity(new android.content.Intent(v.getContext(), MainActivity.class));
+                            final User newUser = new User(authResult.getUser().getUid(), email, displayName, photoToString, "Empty");
+                            db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                @Override
+                                public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                                    boolean emailValid = true;
+                                    boolean dnValid = true;
+                                    for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
+                                        if(email.equals(doc.getString("mEmail"))){
+                                            emailValid = false;
                                         }
-                                    });
+                                        if(displayName.equals(doc.getString("mDisplayName"))){
+                                            dnValid = false;
+                                        }
+                                    }
+                                    if(!emailValid){
+                                        Toast.makeText(getApplicationContext(), "This Email has Already Been Registered.", Toast.LENGTH_SHORT).show();
+                                    }
+                                    if(!dnValid){
+                                        Toast.makeText(getApplicationContext(), "This Display Name has Been Taken.", Toast.LENGTH_SHORT).show();
+                                    }
+                                    if(emailValid && dnValid){
+                                        db.collection("users").add(newUser)
+                                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                    @Override
+                                                    public void onSuccess(DocumentReference documentReference) {
+                                                        Toast.makeText(getApplicationContext(), "Registration Successful.", Toast.LENGTH_SHORT).show();
+                                                        startActivity(new android.content.Intent(v.getContext(), MainActivity.class));
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(getApplicationContext(), "Something Went Wrong.  Please Try Again.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                }
+                            });
 
                         }
                     });

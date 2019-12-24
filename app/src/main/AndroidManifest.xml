@@ -20,7 +20,7 @@
         <activity android:name=".settings.SettingsActivity" />
         <activity
             android:name=".records.RecordsPage"
-            android:theme="@style/FragTheme" />
+            android:theme="@style/MainTheme" />
         <activity android:name=".records.AddRecord" />
         <activity
             android:name=".MainActivity"

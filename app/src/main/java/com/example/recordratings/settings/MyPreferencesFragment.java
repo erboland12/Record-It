@@ -24,8 +24,17 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
     private Preference rating;
     private Preference feedback;
     private Preference darkMode;
+    private Preference disableCensorship;
+
+    //Shared Preference Declaration for dark mode.
     private SharedPreferences shared;
     private SharedPreferences.Editor editor;
+
+    //Shared Preferences for Censorship
+    private SharedPreferences censorSP;
+    private SharedPreferences.Editor censorEditor;
+
+
     private boolean isDark = false;
 
     @Override
@@ -52,7 +61,10 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
             }
         });
 
+        censorSP = getActivity().getSharedPreferences("censorPrefs", Context.MODE_PRIVATE);
+
         darkMode = (SwitchPreference) findPreference("darkMode");
+        disableCensorship = findPreference("disableCensor");
 
         editor = shared.edit();
         darkMode.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -62,20 +74,39 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
                 if(isOn){
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                     Toast.makeText(SettingsActivity.contextOfApplication, "Dark Mode Enabled", Toast.LENGTH_SHORT).show();
-                    isDark = true;
                     editor.putBoolean("darkMode",true);
                     editor.apply();
                     editor.commit();
                 }else{
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                     Toast.makeText(SettingsActivity.contextOfApplication, "Dark Mode Disabled", Toast.LENGTH_SHORT).show();
-                    isDark = false;
                     editor.putBoolean("darkMode",false);
                     editor.apply();
                     editor.commit();
                 }
                 getActivity().finish();
                 startActivity(new Intent(SettingsActivity.getContextOfApplication(), SettingsActivity.class));
+                return true;
+            }
+        });
+
+        censorEditor = censorSP.edit();
+        disableCensorship.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                boolean isOn = (boolean) newValue;
+                if(isOn){
+                    censorEditor.putBoolean("censorOff", true);
+                    Toast.makeText(SettingsActivity.contextOfApplication, "Censorship Disabled", Toast.LENGTH_SHORT).show();
+                }else{
+                    censorEditor.putBoolean("censorOff", false);
+                    Toast.makeText(SettingsActivity.contextOfApplication, "Censorship Enabled", Toast.LENGTH_SHORT).show();
+                }
+                censorEditor.apply();
+                censorEditor.commit();
+
+//                getActivity().finish();
+//                startActivity(new Intent(SettingsActivity.getContextOfApplication(), SettingsActivity.class));
                 return true;
             }
         });

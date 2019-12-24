@@ -10,6 +10,14 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="Content">
+        <SwitchPreference
+            android:key="disableCensor"
+            android:title="Disable Censorship"
+            android:summary="Turning this on will not censor any expletives in the comments."/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="Contact Us">
 
         <Preference

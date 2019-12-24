@@ -1,6 +1,7 @@
 package com.example.recordratings.records;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.recordratings.MainActivity;
+import com.example.recordratings.misc.Censor;
 import com.example.recordratings.misc.MovePage;
 import com.example.recordratings.R;
 import com.squareup.picasso.Picasso;
@@ -33,11 +35,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class RecordsAdapter extends
     RecyclerView.Adapter<RecordsAdapter.ViewHolder> {
 
     Fragment mFragment;
     FragmentManager mManager;
+
+    private SharedPreferences censorSP;
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         public TextView albumTextView;
@@ -52,6 +58,11 @@ public class RecordsAdapter extends
             artistTextView = itemView.findViewById(R.id.artist);
             ratingBar = itemView.findViewById(R.id.rating);
             photoImageView = itemView.findViewById(R.id.photo);
+        }
+
+        public boolean returnCensor(){
+            censorSP = itemView.getContext().getSharedPreferences("censorPrefs", MODE_PRIVATE);
+            return censorSP.getBoolean("censorOff", false);
         }
     }
 
@@ -89,7 +100,13 @@ public class RecordsAdapter extends
         Picasso.get().load(uri).into(imageView);
 
         final TextView textView = viewHolder.albumTextView;
-        textView.setText(buf.getTitle());
+        if(buf.getTitle().length() > 21){
+            String shortened = buf.getTitle().substring(0, 18);
+            shortened += "...";
+            textView.setText(shortened);
+        }else{
+            textView.setText(buf.getTitle());
+        }
         final TextView textView2 = viewHolder.artistTextView;
         textView2.setText(buf.getArtist());
         final RatingBar rating = viewHolder.ratingBar;
@@ -117,23 +134,5 @@ public class RecordsAdapter extends
     public int getItemCount() {
         return mRecords.size();
     }
-
-    public static Bitmap getBitmapFromURL(String src) {
-        try {
-            URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            Log.e("Bitmap","returned");
-            return myBitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("Exception",e.getMessage());
-            return null;
-        }
-    }
-
 
 }

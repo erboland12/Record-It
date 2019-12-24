@@ -28,7 +28,7 @@
             android:id="@+id/loginText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16pt"
+            android:layout_marginTop="5pt"
             android:backgroundTint="?attr/textcolor"
             android:hint="@string/email"
             android:textColor="?attr/textcolor"

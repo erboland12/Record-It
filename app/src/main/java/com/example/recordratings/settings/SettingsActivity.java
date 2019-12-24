@@ -18,11 +18,7 @@ import com.example.recordratings.R;
 public class SettingsActivity extends AppCompatActivity {
 
     public static Context contextOfApplication;
-    private static ContentResolver contentResolver;
-    private static Window window;
-    private FragmentManager manager;
-    private FragmentTransaction transaction;
-    private Fragment fragment;
+
 
     private MyPreferencesFragment frag;
 
@@ -37,8 +33,6 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTitle("Settings");
         setContentView(R.layout.activity_settings);
-        contentResolver = getContentResolver();
-        window = getWindow();
 
         frag = new MyPreferencesFragment();
 

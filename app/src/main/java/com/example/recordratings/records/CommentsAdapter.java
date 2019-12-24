@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.recordratings.credentials.ProfileActivity;
 import com.example.recordratings.R;
+import com.example.recordratings.misc.Censor;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,12 +40,14 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     private ImageView replyImageView;
 
     private SharedPreferences shared;
+    private SharedPreferences censorSP;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
     public static int rvPosition;
     public static String commentSelection = " ";
     public static boolean isDark;
+    private boolean isCensored;
 
     private InputMethodManager imm;
 
@@ -84,6 +87,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             mAuth = FirebaseAuth.getInstance();
 
             shared = itemView.getContext().getSharedPreferences("liked", MODE_PRIVATE);
+            censorSP = itemView.getContext().getSharedPreferences("censorPrefs", MODE_PRIVATE);
 
             comsDown.setTextColor(itemView.getResources().getColor(R.color.red));
             comsUp.setTextColor(itemView.getResources().getColor(R.color.colorGreenBack));
@@ -100,7 +104,12 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         public boolean returnDark(){
             shared = itemView.getContext().getSharedPreferences("DarkMode", MODE_PRIVATE);
             isDark = shared.getBoolean("darkMode", false);
-            return shared.getBoolean("darkMode", false);
+            return isDark;
+        }
+
+        public boolean returnCensor(){
+            isCensored = censorSP.getBoolean("censorOff", false);
+            return isCensored;
         }
 
 
@@ -134,6 +143,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
 
         // Get the data model based on position
         final Comment com = mComments.get(position);
+        Censor censor = new Censor();
 
         rvPosition = position;
 
@@ -147,7 +157,12 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         final TextView dn = viewHolder.dnTextView;
         dn.setText(com.getmDisplayName());
         final TextView message = viewHolder.commentTextView;
-        message.setText(com.getmContents());
+        if(!viewHolder.returnCensor()){
+            String contents = censor.censorText(com.getmContents());
+            message.setText(contents);
+        }else{
+            message.setText(com.getmContents());
+        }
         final TextView upArrow = viewHolder.upArrowTextView;
         upArrow.setText("\u2303");
         final TextView votes = viewHolder.votesTextView;
@@ -284,4 +299,5 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     public int getItemCount() {
         return mComments.size();
     }
+
 }
