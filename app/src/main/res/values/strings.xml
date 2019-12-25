@@ -43,6 +43,10 @@
     <string name="edit_apply">Apply</string>
     <string name="edit_cancel">Cancel</string>
     <string name="check_email_header">Enter Your Email Address for a Validation Message</string>
+    <string name="report">Report an Account</string>
+    <string name="report_spinner_head">Select a Reason why you are Reporting this Account: </string>
+    <string name="report_user">Enter Display Name Here...</string>
+    <string name="report_submit">Report User</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

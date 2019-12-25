@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -98,6 +99,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
                 comsPost.setTextColor(itemView.getResources().getColor(R.color.colorWhite));
                 comsVotes.setTextColor(itemView.getResources().getColor(R.color.colorWhite));
                 dateTextView.setTextColor(itemView.getResources().getColor(R.color.hintDarkModeColor));
+                replyImageView.setColorFilter(itemView.getResources().getColor(R.color.hintDarkModeColor), PorterDuff.Mode.SRC_ATOP);
             }
 
         }
@@ -107,13 +109,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             return isDark;
         }
 
-        public boolean returnCensor(){
+        private boolean returnCensor(){
             isCensored = censorSP.getBoolean("censorOff", false);
             return isCensored;
         }
-
-
-
 
     }
 

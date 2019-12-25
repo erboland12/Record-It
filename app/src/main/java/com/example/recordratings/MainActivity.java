@@ -247,14 +247,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 break;
             }
-            case R.id.my_records:{
-                if(mAuth.getCurrentUser() != null){
-                    startActivity(new Intent(MainActivity.this, MyRecordsActivity.class));
-                }else{
-                    Toast.makeText(this, "You Must be Logged In to View your Records.", Toast.LENGTH_LONG).show();
-                }
-                break;
-            }
             case R.id.my_profile: {
                 MovePage m = new MovePage();
                 if(mAuth.getCurrentUser() != null){

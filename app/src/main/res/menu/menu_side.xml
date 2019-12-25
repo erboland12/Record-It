@@ -10,10 +10,6 @@
 
     </item>
     <item
-        android:id="@+id/my_records"
-        android:title="My Records">
-    </item>
-    <item
         android:id="@+id/menu_add_record"
         android:title="Add Record">
     </item>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/feedback_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/backgroundcolor">
+
+    <TextView
+        android:id="@+id/pop_Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="15pt"
+        android:gravity="center"
+        android:textColor="?attr/textcolor"
+        android:text="Send us Feedback!"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/pop_sub_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10pt"
+        android:gravity="center"
+        android:textColor="?attr/textcolor"
+        android:text="What do you like about this app?  What needs to be implemented or improved?  Let us know down below!"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/feedback_message"
+        android:inputType="textMultiLine"
+        android:lines="8"
+        android:minLines="6"
+        android:gravity="top|left"
+        android:maxLines="10"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5pt"
+        android:layout_marginLeft="10pt"
+        android:layout_marginRight="10pt"
+        android:background="@drawable/border"
+        android:scrollbars="vertical"
+        />
+    <Button
+        android:id="@+id/feedback_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:layout_gravity="center"
+        android:layout_marginLeft="10pt"
+        android:layout_marginRight="10pt"
+        android:layout_marginTop="15pt"
+        android:layout_marginBottom="15pt"
+        android:background="@color/colorGreenBack"
+        android:textColor="@color/colorWhite"/>
+
+</LinearLayout>

@@ -15,6 +15,11 @@
             android:key="disableCensor"
             android:title="Disable Censorship"
             android:summary="Turning this on will not censor any expletives in the comments."/>
+
+        <Preference
+            android:key="reportUser"
+            android:title="Report User"
+            android:summary="Report an account that you believe is acting inappropriately."/>
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -28,7 +33,7 @@
         <Preference
             app:key="feedback"
             app:title="Send Feedback"
-            app:summary="Report any bugs or suggest new features"/>
+            app:summary="Report any bugs or suggest new features."/>
     </PreferenceCategory>
 
 </PreferenceScreen>
