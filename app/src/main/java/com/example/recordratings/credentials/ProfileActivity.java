@@ -53,6 +53,8 @@ import com.squareup.picasso.Picasso;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -306,25 +308,23 @@ public class ProfileActivity extends AppCompatActivity {
                         }
                     });                }
 
-                if(!editBio.getText().toString().isEmpty()){
-                    db.collection("users").whereEqualTo("mId", mAuth.getCurrentUser().getUid()).addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                            for(DocumentSnapshot doc: queryDocumentSnapshots){
-                                db.collection("users").document(doc.getId()).update("bio", editBio.getText().toString())
+                db.collection("users").whereEqualTo("mId", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for(QueryDocumentSnapshot doc: task.getResult()){
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("bio", '"' + editBio.getText().toString() + '"');
+                            db.collection("users").document(doc.getId()).update(map)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            editBio.getText().toString().trim();
-                                            bio.setText('"' + editBio.getText().toString() + '"');
-                                            editBio.getText().toString().equals("");
+                                            editBio.setText("");
                                         }
                                     });
-                                break;
-                            }
+                            break;
                         }
-                    });
-                }
+                    }
+                });
 
                 Toast.makeText(v.getContext(), "Changes Applied.", Toast.LENGTH_SHORT).show();
                 alertDialog.cancel();
@@ -371,15 +371,19 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
                 final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
             }
 
         }else {
-            Toast.makeText(this, "You haven't picked Image",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No Image has been Selected.",Toast.LENGTH_LONG).show();
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
+    }
 }
