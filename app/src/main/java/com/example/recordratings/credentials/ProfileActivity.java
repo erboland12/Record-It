@@ -129,10 +129,10 @@ public class ProfileActivity extends AppCompatActivity {
         //Gets all of the user's records from db
         readFromDatabase();
 
-        db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                for(QueryDocumentSnapshot doc: task.getResult()){
                     if(doc.getString("mId").equals(uid)){
                         Uri uri = Uri.parse(doc.getString("mPhotoUrl"));
                         Picasso.get().load(uri).into(pic);
@@ -298,36 +298,38 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!photoToString.isEmpty()){
-                    db.collection("users").whereEqualTo("mId", mAuth.getCurrentUser().getUid()).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    db.collection("users").whereEqualTo("mId", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
-                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                            for(DocumentSnapshot doc: queryDocumentSnapshots){
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            for(DocumentSnapshot doc: task.getResult()){
                                 db.collection("users").document(doc.getId()).update("mPhotoUrl", photoToString);
                                 break;
                             }
                         }
-                    });                }
+                    });
+
+                }
 
                 db.collection("users").whereEqualTo("mId", mAuth.getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for(QueryDocumentSnapshot doc: task.getResult()){
+                        for(final QueryDocumentSnapshot doc: task.getResult()){
                             Map<String, Object> map = new HashMap<>();
                             map.put("bio", '"' + editBio.getText().toString() + '"');
                             db.collection("users").document(doc.getId()).update(map)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
-                                        public void onSuccess(Void aVoid) {
-                                            editBio.setText("");
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            bio.setText(doc.getString("bio"));
                                         }
                                     });
-                            break;
                         }
                     }
                 });
-
                 Toast.makeText(v.getContext(), "Changes Applied.", Toast.LENGTH_SHORT).show();
                 alertDialog.cancel();
+                startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                finish();
             }
         });
 
