@@ -8,40 +8,45 @@ public class Censor {
 
     public String censorText(String text){
         String result = text;
-        String finalResult = result.toLowerCase();
-        if(finalResult.contains("fuck") ||
-           finalResult.contains(" ass ") ||
-           finalResult.contains("ass ") ||
-           finalResult.contains("asshole") ||
-           finalResult.contains("bitch") ||
-           finalResult.contains("fag") ||
-           finalResult.contains("faggot") ||
-           finalResult.contains("faggit") ||
-           finalResult.contains("fagget") ||
-           finalResult.contains("shit") ||
-           finalResult.contains("nigger") ||
-           finalResult.contains(" dyke ") ||
-           finalResult.contains("dyke ") ||
-           finalResult.contains(" dike ") ||
-           finalResult.contains("dike") ||
-           finalResult.contains("chode") ||
-           finalResult.contains("choad") ||
-           finalResult.contains("cunt") ||
-           finalResult.contains("kunt") ||
-           finalResult.contains("dick") ||
-           finalResult.contains("tits") ||
-           finalResult.contains("cum") ||
-           finalResult.contains("coon") ||
-           finalResult.contains("douche") ||
-           finalResult.contains("jizz") ||
-           finalResult.contains(" poon ") ||
-           finalResult.contains("poon ") ||
-           finalResult.contains("pussy") ||
-           finalResult.contains("retard") ||
-           finalResult.contains("twat") ||
-           finalResult.contains(" hoe ") ||
-           finalResult.contains("hoe ") ||
-           finalResult.contains("whore")){
+        String finalResult = result;
+        if(finalResult.toLowerCase().contains("fuck") ||
+           finalResult.toLowerCase().contains(" ass ") ||
+           finalResult.toLowerCase().contains("ass ") ||
+           finalResult.toLowerCase().contains("asshole") ||
+           finalResult.toLowerCase().contains("bitch") ||
+           finalResult.toLowerCase().contains("fag") ||
+           finalResult.toLowerCase().contains("faggot") ||
+           finalResult.toLowerCase().contains("faggit") ||
+           finalResult.toLowerCase().contains("fagget") ||
+           finalResult.toLowerCase().contains("shit") ||
+           finalResult.toLowerCase().contains("nigger") ||
+           finalResult.toLowerCase().contains("dyke") ||
+           finalResult.toLowerCase().contains("dike") ||
+           finalResult.toLowerCase().contains("chode") ||
+           finalResult.toLowerCase().contains("choad") ||
+           finalResult.toLowerCase().contains("cunt") ||
+           finalResult.toLowerCase().contains("kunt") ||
+           finalResult.toLowerCase().contains("dick") ||
+           finalResult.toLowerCase().contains("tits") ||
+           finalResult.toLowerCase().contains(" cum ") ||
+           finalResult.toLowerCase().contains("cum ") ||
+           finalResult.toLowerCase().contains(" coon ") ||
+           finalResult.toLowerCase().contains("coon ") ||
+           finalResult.toLowerCase().contains("douche") ||
+           finalResult.toLowerCase().contains("jizz") ||
+           finalResult.toLowerCase().contains(" poon ") ||
+           finalResult.toLowerCase().contains("poon ") ||
+           finalResult.toLowerCase().contains("pussy") ||
+           finalResult.toLowerCase().contains("retard") ||
+           finalResult.toLowerCase().contains("twat") ||
+           finalResult.toLowerCase().contains(" hoe ") ||
+           finalResult.toLowerCase().contains("hoe ") ||
+           finalResult.toLowerCase().contains("whore") ||
+           finalResult.toLowerCase().equals("ass") ||
+           finalResult.toLowerCase().equals("cum") ||
+           finalResult.toLowerCase().equals("coon") ||
+           finalResult.toLowerCase().equals("poon") ||
+           finalResult.toLowerCase().equals("hoe")){
             finalResult = text.toLowerCase().replace("fuck", "****")
                                             .replace("ass", "***")
                                             .replace(" ass ", " *** ")

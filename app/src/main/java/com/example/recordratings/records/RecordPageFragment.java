@@ -253,11 +253,9 @@ public class RecordPageFragment extends Fragment {
             }
         });
 
-        if(sortCommentsBy.getSelectedItem().toString().equals("Highest Rated") ||
-           CommentsAdapter.commentSelection.equals("mVotes")){
+        if(sortCommentsBy.getSelectedItem().toString().equals("Highest Rated")){
             selection = "mVotes";
-        } else if(sortCommentsBy.getSelectedItem().toString().equals("Recently Added") ||
-            CommentsAdapter.commentSelection.equals("mTimestamp")){
+        } else if(sortCommentsBy.getSelectedItem().toString().equals("Recently Added")){
             selection = "mTimestamp";
         }
 
@@ -446,62 +444,32 @@ public class RecordPageFragment extends Fragment {
     }
 
     public void queryComments(){
-        if(selection.equals("mTimestamp")){
-            db.collection("comments").orderBy("mTimestamp", direction).addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                    for(DocumentSnapshot doc: queryDocumentSnapshots){
-                        if(doc.getString("mRecordId").equals(recId)){
-                            Comment newComment = new Comment(doc.getString("mDisplayName"),
-                                    doc.getString("mContents"),
-                                    doc.getString("mTimestamp"),
-                                    doc.getString("mUserId"),
-                                    doc.getString("mRecordId"),
-                                    doc.getString("mCommentId"),
-                                    doc.getString("photoString"),
-                                    doc.getLong("mVotes").intValue());
+        db.collection("comments").orderBy(selection, direction).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                for(DocumentSnapshot doc: queryDocumentSnapshots){
+                    if(doc.getString("mRecordId").equals(recId)){
+                        Comment newComment = new Comment(doc.getString("mDisplayName"),
+                                doc.getString("mContents"),
+                                doc.getString("mTimestamp"),
+                                doc.getString("mUserId"),
+                                doc.getString("mRecordId"),
+                                doc.getString("mCommentId"),
+                                doc.getString("photoString"),
+                                doc.getLong("mVotes").intValue());
 
-                            comments.add(newComment);
-                        }
+                        comments.add(newComment);
                     }
-
-                    adapter = new CommentsAdapter(comments);
-                    rvComments.setAdapter(adapter);
-                    rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
-                    adapter.notifyDataSetChanged();
-                    totalComs.setText("Total Comments: " + adapter.getItemCount());
-                    comments = new ArrayList<>();
                 }
-            });
-        }
-        else if (selection.equals("mVotes")){
-            db.collection("comments").orderBy("mVotes", direction).addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                    for(DocumentSnapshot doc: queryDocumentSnapshots){
-                        if(doc.getString("mRecordId").equals(recId)){
-                            Comment newComment = new Comment(doc.getString("mDisplayName"),
-                                    doc.getString("mContents"),
-                                    doc.getString("mTimestamp"),
-                                    doc.getString("mUserId"),
-                                    doc.getString("mRecordId"),
-                                    doc.getString("mCommentId"),
-                                    doc.getString("photoString"),
-                                    doc.getLong("mVotes").intValue());
 
-                            comments.add(newComment);
-                        }
-                    }
-
-                    adapter = new CommentsAdapter(comments);
-                    rvComments.setAdapter(adapter);
-                    rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
-                    adapter.notifyDataSetChanged();
-                    totalComs.setText("Total Comments: " + adapter.getItemCount());
-                    comments = new ArrayList<>();
-                }
-            });
-        }
+                adapter = new CommentsAdapter(comments);
+                rvComments.setAdapter(adapter);
+                rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
+                adapter.notifyDataSetChanged();
+                totalComs.setText("Total Comments: " + adapter.getItemCount());
+                comments = new ArrayList<>();
+            }
+        });
     }
 
     @Override

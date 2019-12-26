@@ -228,10 +228,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
                                    RecordPageFragment.selection = "mVotes";
                                }
 
-                               RecordPageFragment.rvComments.scrollToPosition(rvPosition);
-
-                               RecordPageFragment.selection = commentSelection;
-
                             }else{
                                Toast.makeText(v.getContext(), "You Have Already Liked This Comment", Toast.LENGTH_SHORT).show();
                            }
@@ -272,19 +268,13 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
                                     commentSelection = "mVotes";
                                 }
 
-                                RecordPageFragment.rvComments.scrollToPosition(rvPosition);
-
-                                RecordPageFragment.selection = commentSelection;
-
-
-
                             }else{
                                 Toast.makeText(v.getContext(), "You Have Already Disliked This Comment.", Toast.LENGTH_SHORT).show();
                             }
                         }
                         editor.apply();
                         editor.commit();
-
+                        RecordPageFragment.rvComments.scrollToPosition(rvPosition);
 
                     }
                 });

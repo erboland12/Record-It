@@ -141,6 +141,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <Spinner
+                        android:visibility="invisible"
                         android:id="@+id/sort_comments"
                         android:layout_alignParentStart="true"
                         android:layout_width="wrap_content"

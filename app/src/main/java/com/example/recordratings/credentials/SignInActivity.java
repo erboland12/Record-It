@@ -18,8 +18,10 @@ import android.widget.Toast;
 
 import com.example.recordratings.MainActivity;
 import com.example.recordratings.R;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -58,6 +60,7 @@ public class SignInActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private StorageReference mStorageRef;
+    private boolean dnInUse = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,52 +101,68 @@ public class SignInActivity extends AppCompatActivity {
                 String password = mPassword.getText().toString();
                 String confirm = mConfirmPassword.getText().toString();
 
+                db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
+                        for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
+                            if(displayName.equals(doc.getString("mDisplayName"))){
+                                dnInUse = true;
+                                Toast.makeText(v.getContext(), "Display Name has Already been Taken.  Choose Another One.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
+                    }
+                });
+
 
                 if(verifyCredentials(email, displayName, password, confirm)){
                     if(mAuth != null){
                         mAuth.signOut();
                     }
-                    mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                        @Override
-                        public void onSuccess(final AuthResult authResult) {
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(displayName).build();
+                    if(dnInUse){
+                        dnInUse = false;
+                    }else{
+                        mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                            @Override
+                            public void onSuccess(final AuthResult authResult) {
+                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(displayName).build();
 
-                            user.updateProfile(profileUpdate);
+                                user.updateProfile(profileUpdate);
 
-                            if(photoToString.isEmpty()) {
-                                photoToString = "https://firebasestorage.googleapis.com/v0/b/record-ratings.appspot.com/o/content%3A%2Fcom.android.providers.media.documents%2Fdocument%2Fimage%253A906?alt=media&token=db7295d0-c0c1-4c33-b512-d0a43f7156e4";
-                            }
-                            final User newUser = new User(authResult.getUser().getUid(), email, displayName, photoToString, "Empty");
-                            Toast.makeText(getApplicationContext(), "Registering...", Toast.LENGTH_SHORT).show();
-                            db.collection("users").add(newUser)
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                        @Override
-                                        public void onSuccess(DocumentReference documentReference) {
-                                            Toast.makeText(getApplicationContext(), "Registration Successful.", Toast.LENGTH_SHORT).show();
-                                            startActivity(new android.content.Intent(v.getContext(), MainActivity.class));
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(getApplicationContext(), "Something Went Wrong.  Please Try Again.", Toast.LENGTH_SHORT).show();
+                                if(photoToString.isEmpty()) {
+                                    photoToString = "https://firebasestorage.googleapis.com/v0/b/record-ratings.appspot.com/o/content%3A%2Fcom.android.providers.media.documents%2Fdocument%2Fimage%253A906?alt=media&token=db7295d0-c0c1-4c33-b512-d0a43f7156e4";
                                 }
-                            });
+                                final User newUser = new User(authResult.getUser().getUid(), email, displayName, photoToString, "Empty");
+                                Toast.makeText(getApplicationContext(), "Registering...", Toast.LENGTH_SHORT).show();
+                                db.collection("users").add(newUser)
+                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                            @Override
+                                            public void onSuccess(DocumentReference documentReference) {
+                                                Toast.makeText(getApplicationContext(), "Registration Successful.", Toast.LENGTH_SHORT).show();
+                                                startActivity(new android.content.Intent(v.getContext(), MainActivity.class));
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(getApplicationContext(), "Something Went Wrong.  Please Try Again.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
 
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            try{
-                                throw e;
                             }
-                            catch(Exception inUse){
-                                Toast.makeText(getApplicationContext(), inUse.getMessage(), Toast.LENGTH_LONG).show();
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                try{
+                                    throw e;
+                                }
+                                catch(Exception inUse){
+                                    Toast.makeText(getApplicationContext(), inUse.getMessage(), Toast.LENGTH_LONG).show();
+                                }
                             }
-                        }
-                    });
-
+                        });
+                    }
                 }
             }
         });

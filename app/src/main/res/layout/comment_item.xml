@@ -50,12 +50,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
+        android:textColor="@color/colorBlack"
         android:layout_marginTop="15pt"
         android:paddingStart="10dp"
         android:paddingEnd="55dp"/>
 
 
     <LinearLayout
+        android:visibility="invisible"
         android:id="@+id/linearLayoutCom1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
