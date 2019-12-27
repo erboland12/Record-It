@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -39,9 +40,12 @@ import android.widget.Toast;
 
 import com.example.recordratings.MainActivity;
 import com.example.recordratings.R;
+import com.example.recordratings.credentials.ProfileActivity;
 import com.example.recordratings.misc.DatabaseHelper;
 import com.example.recordratings.misc.MovePage;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -51,6 +55,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -58,10 +63,13 @@ import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.annotation.Nullable;
@@ -91,10 +99,10 @@ public class RecordPageFragment extends Fragment {
     private TextView commentCharCount;
     public static EditText commentBox;
     private ImageView photo;
-    private CircleImageView commentPic;
+    private CircleImageView commentPic, createrPic;
     private RatingBar rating;
     private TextView description;
-    private TextView totalComs, comsDn, comsPost, comsUp, comsVotes, comsDown;
+    private TextView totalComs, comsDn, comsPost, comsUp, comsVotes, comsDown, createrName;
     public static Spinner sortCommentsBy;
     private View view1;
     private View view2;
@@ -205,6 +213,8 @@ public class RecordPageFragment extends Fragment {
         commentCharCount = view.findViewById(R.id.comment_char_count);
         sortCommentsBy = view.findViewById(R.id.sort_comments);
         rvComments = view.findViewById(R.id.rvComments);
+        createrPic = view.findViewById(R.id.creater_pic);
+        createrName = view.findViewById(R.id.creater_name);
         adapter = new CommentsAdapter(comments);
         rvComments.setAdapter(adapter);
         rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -219,6 +229,8 @@ public class RecordPageFragment extends Fragment {
         selectionAdapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_dropdown_item, sorts);
 
         if(returnDark()){
+            description.setBackground(getResources().getDrawable(R.drawable.dark_layout_border));
+            description.setPadding(20, 20, 20, 20);
             commentBox.setHintTextColor(getResources().getColor(R.color.hintDarkModeColor));
             addComLayout.setBackgroundColor(getResources().getColor(R.color.darkModeBack));
             rvLayout.setBackgroundColor(getResources().getColor(R.color.darkModeBack));
@@ -239,6 +251,13 @@ public class RecordPageFragment extends Fragment {
             displayName = mAuth.getCurrentUser().getDisplayName();
             userId = mAuth.getCurrentUser().getUid();
         }
+
+        createrPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.getContext().startActivity(new Intent(v.getContext(), ProfileActivity.class));
+            }
+        });
 
         db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -444,6 +463,27 @@ public class RecordPageFragment extends Fragment {
     }
 
     public void queryComments(){
+        db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                for(QueryDocumentSnapshot doc : queryDocumentSnapshots){
+                    if(recId.contains(doc.getString("id"))){
+                        db.collection("users").whereEqualTo("mId", doc.getString("id")).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for(final QueryDocumentSnapshot doc: task.getResult()){
+                                    Uri uri = Uri.parse(doc.getString("mPhotoUrl"));
+                                    Picasso.get().load(uri).into(createrPic);
+                                    ProfileActivity.uid = doc.getString("mId");
+
+                                    createrName.setText("Posted by " + doc.getString("mDisplayName"));
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        });
         db.collection("comments").orderBy(selection, direction).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {

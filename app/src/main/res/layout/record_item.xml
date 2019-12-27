@@ -45,6 +45,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.487" />
 
+
     <TextView
         android:id="@+id/album"
         android:layout_width="wrap_content"

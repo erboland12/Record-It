@@ -80,6 +80,44 @@ public class SignInActivity extends AppCompatActivity {
         mSelectPhotoBtn = findViewById(R.id.sign_up_select_img);
         mProfilePreview = findViewById(R.id.sign_up_img_view);
 
+        mDisplay.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() > 15){
+                    Toast.makeText(getApplicationContext(), "Display Name Cannot Exceed 16 Characters", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        mPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() > 15){
+                    Toast.makeText(getApplicationContext(), "Password Cannot Exceed 16 Characters", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         //Sets up Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();

@@ -24,6 +24,12 @@ import com.example.recordratings.MainActivity;
 import com.example.recordratings.misc.Censor;
 import com.example.recordratings.misc.MovePage;
 import com.example.recordratings.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -35,34 +41,33 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import static android.content.Context.MODE_PRIVATE;
 
 public class RecordsAdapter extends
     RecyclerView.Adapter<RecordsAdapter.ViewHolder> {
 
-    Fragment mFragment;
-    FragmentManager mManager;
-
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
     private SharedPreferences censorSP;
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView albumTextView;
-        public TextView artistTextView;
-        public ImageView photoImageView;
-        public RatingBar ratingBar;
 
-        public ViewHolder(View itemView){
+    public class ViewHolder extends RecyclerView.ViewHolder{
+        private TextView albumTextView, artistTextView;
+        private ImageView photoImageView;
+        private RatingBar ratingBar;
+
+        private ViewHolder(View itemView){
             super(itemView);
+
+            db = FirebaseFirestore.getInstance();
+            mAuth = FirebaseAuth.getInstance();
 
             albumTextView = itemView.findViewById(R.id.album);
             artistTextView = itemView.findViewById(R.id.artist);
             ratingBar = itemView.findViewById(R.id.rating);
             photoImageView = itemView.findViewById(R.id.photo);
-        }
-
-        public boolean returnCensor(){
-            censorSP = itemView.getContext().getSharedPreferences("censorPrefs", MODE_PRIVATE);
-            return censorSP.getBoolean("censorOff", false);
         }
     }
 
@@ -109,8 +114,21 @@ public class RecordsAdapter extends
         }
         final TextView textView2 = viewHolder.artistTextView;
         textView2.setText(buf.getArtist());
+
         final RatingBar rating = viewHolder.ratingBar;
         rating.setRating((float) (buf.getRating()));
+
+//        db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
+//                    if(doc.getString("mId").equals(buf.getId())){
+//                        textView3.setText( doc.getString("mDisplayName"));
+//                    }
+//                }
+//            }
+//        });
+
         viewHolder.itemView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {

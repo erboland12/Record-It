@@ -52,6 +52,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
 
     private InputMethodManager imm;
 
+    public static int commentCount;
+
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
@@ -286,6 +288,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     // Returns the total count of items in the list
     @Override
     public int getItemCount() {
+        commentCount = mComments.size();
         return mComments.size();
     }
 
