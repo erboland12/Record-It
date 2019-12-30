@@ -21,6 +21,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.recordratings.MainActivity;
+import com.example.recordratings.credentials.ProfileActivity;
 import com.example.recordratings.misc.Censor;
 import com.example.recordratings.misc.MovePage;
 import com.example.recordratings.R;
@@ -51,12 +52,14 @@ public class RecordsAdapter extends
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private SharedPreferences censorSP;
+    private boolean isCensored;
 
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         private TextView albumTextView, artistTextView;
         private ImageView photoImageView;
         private RatingBar ratingBar;
+        public View view;
 
         private ViewHolder(View itemView){
             super(itemView);
@@ -68,7 +71,16 @@ public class RecordsAdapter extends
             artistTextView = itemView.findViewById(R.id.artist);
             ratingBar = itemView.findViewById(R.id.rating);
             photoImageView = itemView.findViewById(R.id.photo);
+            view = itemView.findViewById(R.id.record_item_view);
+
+            censorSP = itemView.getContext().getSharedPreferences("censorPrefs", MODE_PRIVATE);
         }
+
+        private boolean returnCensor(){
+            isCensored = censorSP.getBoolean("censorOff", false);
+            return isCensored;
+        }
+
     }
 
     private List<Records> mRecords;
@@ -118,16 +130,10 @@ public class RecordsAdapter extends
         final RatingBar rating = viewHolder.ratingBar;
         rating.setRating((float) (buf.getRating()));
 
-//        db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
-//                    if(doc.getString("mId").equals(buf.getId())){
-//                        textView3.setText( doc.getString("mDisplayName"));
-//                    }
-//                }
-//            }
-//        });
+        final View view = viewHolder.view;
+        if(position == 0){
+            view.setVisibility(View.INVISIBLE);
+        }
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -140,7 +146,12 @@ public class RecordsAdapter extends
                 RecordPageFragment.ratingTemp = buf.getRating();
                 RecordPageFragment.photoTemp = buf.getPhoto();
                 RecordPageFragment.genreTemp = buf.getGenre();
-                RecordPageFragment.descTemp = buf.getDesc();
+                if(!viewHolder.returnCensor()){
+                    Censor censor = new Censor();
+                    RecordPageFragment.descTemp = censor.censorText(buf.getDesc());
+                }else{
+                    RecordPageFragment.descTemp = buf.getDesc();
+                }
                 RecordPageFragment.photoStringTemp = buf.getmPhotoString();
                 m.moveActivity(viewHolder.itemView.getContext(), RecordsPage.class);
             }

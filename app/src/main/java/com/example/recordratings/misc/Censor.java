@@ -1,5 +1,8 @@
 package com.example.recordratings.misc;
 
+import java.util.Map;
+import java.util.regex.Pattern;
+
 public class Censor {
 
     public Censor(){
@@ -7,6 +10,9 @@ public class Censor {
     }
 
     public String censorText(String text){
+//        return text.replaceAll(setUpBuilder("fuck", "shit", "ass", "bitch"), "*");
+
+
         String result = text;
         String finalResult = result;
         if(finalResult.toLowerCase().contains("fuck") ||
@@ -47,37 +53,44 @@ public class Censor {
            finalResult.toLowerCase().equals("coon") ||
            finalResult.toLowerCase().equals("poon") ||
            finalResult.toLowerCase().equals("hoe")){
-            finalResult = text.toLowerCase().replace("fuck", "****")
-                                            .replace("ass", "***")
-                                            .replace(" ass ", " *** ")
-                                            .replace("ass ", "*** ")
-                                            .replace("asshole", "***hole")
-                                            .replace("bitch", "*****")
-                                            .replace("fag", "***")
-                                            .replace("faggot", "******")
-                                            .replace("faggit", "******")
-                                            .replace("fagget", "******")
-                                            .replace("shit", "****")
-                                            .replace("nigger", "******")
-                                            .replace("dyke", "****")
-                                            .replace("dike", "****")
-                                            .replace("chode", "*****")
-                                            .replace("choad", "*****")
-                                            .replace("cunt", "****")
-                                            .replace("kunt", "****")
-                                            .replace("dick", "****")
-                                            .replace("cock", "****")
-                                            .replace("tits", "****")
-                                            .replace("cum", "***")
-                                            .replace("coon", "****")
-                                            .replace("douche", "******")
-                                            .replace("jizz", "****")
-                                            .replace("pussy", "*****")
-                                            .replace("retard", "******")
-                                            .replace("twat", "****")
-                                            .replace("hoe", "***")
-                                            .replace("whore", "*****");
+            finalResult = text
+                    .replaceAll("\\W*((?i)fuck(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)ass(?-i))\\W*", " *** ")
+                    .replaceAll("\\W*((?i)bitch(?-i))\\W*", " ***** ")
+                    .replaceAll("\\W*((?i)fag(?-i))\\W*", " *** ")
+                    .replaceAll("\\W*((?i)shit(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)nigger(?-i))\\W*", " ****** ")
+                    .replaceAll("\\W*((?i)dyke(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)dike(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)chode(?-i))\\W*", " ***** ")
+                    .replaceAll("\\W*((?i)choad(?-i))\\W*", " ***** ")
+                    .replaceAll("\\W*((?i)cunt(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)kunt(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)dick(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)cock(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)tits(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)cum(?-i))\\W*", " *** ")
+                    .replaceAll("\\W*((?i)coon(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)douche(?-i))\\W*", " ****** ")
+                    .replaceAll("\\W*((?i)jizz(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)fuck(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)pussy(?-i))\\W*", " ***** ")
+                    .replaceAll("\\W*((?i)retard(?-i))\\W*", " ****** ")
+                    .replaceAll("\\W*((?i)twat(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)hoe(?-i))\\W*", " *** ")
+                    .replaceAll("\\W*((?i)whore(?-i))\\W*", " ****" );
+
         }
         return finalResult;
     }
+
+//    private String setUpBuilder(String... text){
+//        String re = "";
+//        for (String w : text)
+//            for (int i = 0; i < w.length(); i++)
+//                re += String.format("|((?<=%s)%s(?=%s))",
+//                        w.substring(0, i).toLowerCase(), w.charAt(i), w.substring(i + 1).toLowerCase());
+//        return re.substring(1).toLowerCase();
+//    }
+
 }

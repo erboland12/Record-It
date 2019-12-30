@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.recordratings.R;
+import com.example.recordratings.misc.Censor;
 import com.example.recordratings.misc.ProfileEditDialog;
 import com.example.recordratings.records.Records;
 import com.example.recordratings.records.RecordsAdapter;
@@ -74,12 +75,9 @@ public class ProfileActivity extends AppCompatActivity {
     private RecyclerView rvRecords;
     private RecordsAdapter adapter;
     private ArrayList<Records> records = new ArrayList<>();
-    private ArrayList<Records> tempRecords = new ArrayList<>();
-    private TextView emptyRv;
 
-    private AlertDialog dialog;
-
-    private SharedPreferences shared;
+    private SharedPreferences shared, censorSP;
+    private boolean isCensored;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private StorageReference mStorageRef;
@@ -109,14 +107,14 @@ public class ProfileActivity extends AppCompatActivity {
         rvRecords = findViewById(R.id.rvProfileRecords);
         adapter = new RecordsAdapter(records);
         rvRecords.setAdapter(adapter);
-        emptyRv = findViewById(R.id.no_records);
+
+        censorSP = getSharedPreferences("censorPrefs", MODE_PRIVATE);
+
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setMessage(R.string.dialog_message)
                 .setTitle(R.string.dialog_title);
-
-        dialog = builder.create();
 
         //Calls toolbar xml file
         Toolbar toolbar = findViewById(R.id.profile_toolbar);
@@ -125,6 +123,7 @@ public class ProfileActivity extends AppCompatActivity {
         if(returnDark()){
             bottom.setBackgroundColor(getResources().getColor(R.color.darkModeBack));
             rvRecords.setBackground(getResources().getDrawable(R.drawable.rv_dark_border));
+
         }
         //Gets all of the user's records from db
         readFromDatabase();
@@ -155,10 +154,15 @@ public class ProfileActivity extends AppCompatActivity {
                         if(doc.getString("bio").equals("Empty")){
                             bio.setText("\"This Mysterious User Has Nothing To Say...\"");
                         }else{
-                            bio.setText(doc.getString("bio"));
+                            if(!returnCensor()){
+                                Censor censor = new Censor();
+                                bio.setText(censor.censorText(doc.getString("bio")));
+                            }else{
+                                bio.setText(doc.getString("bio"));
+                            }
                         }
 
-                        break;
+//                        break;
 
                     }
                 }
@@ -171,6 +175,11 @@ public class ProfileActivity extends AppCompatActivity {
     private boolean returnDark(){
         shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
         return shared.getBoolean("darkMode", false);
+    }
+
+    private boolean returnCensor(){
+        isCensored = censorSP.getBoolean("censorOff", false);
+        return isCensored;
     }
 
     public void readFromDatabase(){
@@ -204,7 +213,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
         records = new ArrayList<>();
-        tempRecords = new ArrayList<>();
     }
 
     @Override
@@ -320,7 +328,12 @@ public class ProfileActivity extends AppCompatActivity {
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            bio.setText(doc.getString("bio"));
+                                            if(!returnCensor()){
+                                                Censor censor = new Censor();
+                                                bio.setText(censor.censorText(doc.getString("bio")));
+                                            }else{
+                                                bio.setText(doc.getString("bio"));
+                                            }
                                         }
                                     });
                         }
@@ -388,4 +401,5 @@ public class ProfileActivity extends AppCompatActivity {
         super.onBackPressed();
         this.finish();
     }
+
 }

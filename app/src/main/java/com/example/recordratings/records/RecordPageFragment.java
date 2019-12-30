@@ -41,6 +41,7 @@ import android.widget.Toast;
 import com.example.recordratings.MainActivity;
 import com.example.recordratings.R;
 import com.example.recordratings.credentials.ProfileActivity;
+import com.example.recordratings.misc.Censor;
 import com.example.recordratings.misc.DatabaseHelper;
 import com.example.recordratings.misc.MovePage;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -102,7 +103,7 @@ public class RecordPageFragment extends Fragment {
     private CircleImageView commentPic, createrPic;
     private RatingBar rating;
     private TextView description;
-    private TextView totalComs, comsDn, comsPost, comsUp, comsVotes, comsDown, createrName;
+    private TextView totalComs, createrName;
     public static Spinner sortCommentsBy;
     private View view1;
     private View view2;
@@ -131,20 +132,14 @@ public class RecordPageFragment extends Fragment {
     private Query.Direction direction = Query.Direction.DESCENDING;
 
     //Buttons
-    private Button delBtn;
-    private Button editBtn;
     private Button commentBtn;
     private MovePage m;
 
     //Database helper
-    private DatabaseHelper dbh;
-    private FirebaseDatabase database;
-    private StorageReference mStorageRef;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private com.google.firebase.database.DatabaseReference dbRef;
-    private SharedPreferences shared;
-    private int layoutManager;
+    private SharedPreferences shared, censorSP;
+    private boolean isCensored;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -194,7 +189,6 @@ public class RecordPageFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_record_page, container, false);
 
-        dbh = new DatabaseHelper(getContext());
         layout = view.findViewById(R.id.record_page_layout);
         rvLayout = view.findViewById(R.id.rvLayout);
         addComLayout = view.findViewById(R.id.add_comment_section);
@@ -202,11 +196,6 @@ public class RecordPageFragment extends Fragment {
         view2 = view.findViewById(R.id.view2);
         description = view.findViewById(R.id.records_page_desc);
         totalComs = view.findViewById(R.id.total_comments);
-        comsDown = view.findViewById(R.id.comment_down_arrow);
-        comsUp = view.findViewById(R.id.comment_up_arrow);
-        comsDn = view.findViewById(R.id.comment_display_name);
-        comsVotes = view.findViewById(R.id.comment_votes);
-        comsPost = view.findViewById(R.id.comment_post);
         commentBox = view.findViewById(R.id.comment_box);
         commentBtn = view.findViewById(R.id.comment_btn);
         commentPic = view.findViewById(R.id.comment_pic);
@@ -218,6 +207,8 @@ public class RecordPageFragment extends Fragment {
         adapter = new CommentsAdapter(comments);
         rvComments.setAdapter(adapter);
         rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        censorSP = view.getContext().getSharedPreferences("censorPrefs", MODE_PRIVATE);
 
         Toolbar toolbar = view.findViewById(R.id.fragment_toolbar);
         toolbar.setFitsSystemWindows(true);
@@ -239,12 +230,16 @@ public class RecordPageFragment extends Fragment {
             selectionAdapter = new ArrayAdapter<>(getActivity(),R.layout.spinner_item, sorts);
             selectionAdapter.setDropDownViewResource(R.layout.spinner_drop_box);
         }
+
+        if(!returnCensor()){
+            Censor censor = new Censor();
+            String desc = description.getText().toString();
+            description.setText(censor.censorText(desc));
+        }
         sortCommentsBy.setAdapter(selectionAdapter);
 
-        database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        mStorageRef = FirebaseStorage.getInstance().getReference();
 
 
         if(mAuth.getCurrentUser() != null){
@@ -254,8 +249,20 @@ public class RecordPageFragment extends Fragment {
 
         createrPic.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                v.getContext().startActivity(new Intent(v.getContext(), ProfileActivity.class));
+            public void onClick(final View v) {
+                db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        for(QueryDocumentSnapshot doc : queryDocumentSnapshots){
+                            if(recId.contains(doc.getString("id"))){
+                                ProfileActivity.uid = doc.getString("id");
+                                v.getContext().startActivity(new Intent(v.getContext(), ProfileActivity.class));
+                                break;
+                            }
+                        }
+                    }
+                });
+
             }
         });
 
@@ -432,6 +439,11 @@ public class RecordPageFragment extends Fragment {
     private boolean returnDark(){
         shared = getActivity().getSharedPreferences("DarkMode", MODE_PRIVATE);
         return shared.getBoolean("darkMode", false);
+    }
+
+    private boolean returnCensor(){
+        isCensored = censorSP.getBoolean("censorOff", false);
+        return isCensored;
     }
 
     @Override

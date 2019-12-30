@@ -6,9 +6,10 @@
     android:orientation="vertical">
 
     <View
+        android:id="@+id/record_item_view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorBlack"
+        android:background="@color/darkModeRealBack"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
