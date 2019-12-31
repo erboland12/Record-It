@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +16,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -60,6 +64,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -106,6 +111,9 @@ public class ProfileActivity extends AppCompatActivity {
         //Initializes RV w/ adapter
         rvRecords = findViewById(R.id.rvProfileRecords);
         adapter = new RecordsAdapter(records);
+        if(uid.equals(mAuth.getCurrentUser().getUid())){
+            new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rvRecords);
+        }
         rvRecords.setAdapter(adapter);
 
         censorSP = getSharedPreferences("censorPrefs", MODE_PRIVATE);
@@ -401,5 +409,69 @@ public class ProfileActivity extends AppCompatActivity {
         super.onBackPressed();
         this.finish();
     }
+
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int direction) {
+            final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(viewHolder.itemView.getContext());
+            dialogBuilder.setTitle("Delete Record")
+                    .setMessage("Are you Sure you Want to Delete this Record?")
+                    .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            final String id = records.get(viewHolder.getAdapterPosition()).getRecId();
+                            db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                    for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
+                                        if(doc.getString("recId").equals(id)){
+                                            db.collection("records").document(doc.getId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Toast.makeText(getApplicationContext(), "Record Deleted", Toast.LENGTH_SHORT).show();
+                                                    finish();
+                                                    startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
+                                                }
+                                            });
+                                            break;
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                            startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
+                        }
+                    })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        finish();
+                        startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
+                    }
+                }).show();
+
+        }
+
+        @Override
+        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            new RecyclerViewSwipeDecorator.Builder(ProfileActivity.this, c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(ProfileActivity.this, R.color.red))
+                    .addSwipeLeftActionIcon(R.drawable.ic_delete_black_24dp)
+                    .create()
+                    .decorate();
+
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }
+    };
 
 }

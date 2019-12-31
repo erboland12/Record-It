@@ -38,6 +38,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
 
 
     private TextView comsDn, comsPost, comsUp, comsVotes, comsDown;
+    private View comment_view;
     private ImageView replyImageView;
 
     private SharedPreferences shared;
@@ -76,6 +77,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             upArrowTextView = itemView.findViewById(R.id.comment_up_arrow);
             votesTextView = itemView.findViewById(R.id.comment_votes);
             downArrowTextView = itemView.findViewById(R.id.comment_down_arrow);
+            comment_view = itemView.findViewById(R.id.comment_view);
 
             comsDown = itemView.findViewById(R.id.comment_down_arrow);
             comsUp = itemView.findViewById(R.id.comment_up_arrow);
@@ -173,11 +175,16 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         final TextView dateText = viewHolder.dateTextView;
         dateText.setText(" - " + com.getmTimestamp());
 
+        if(position == 0){
+            comment_view.setVisibility(View.INVISIBLE);
+        }
+
         if(mAuth.getCurrentUser() != null){
             if(com.getmDisplayName().equals(mAuth.getCurrentUser().getDisplayName())){
                 replyImageView.setVisibility(View.INVISIBLE);
             }
         }
+
         replyImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

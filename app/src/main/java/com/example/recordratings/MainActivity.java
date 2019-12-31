@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static ArrayList<Records> records = new ArrayList<>();
     private ArrayList<Records> tempRecords = new ArrayList<>();
     private TextView emptyRv;
-    private View hView;
+    private View hView, rvView;
     private CircleImageView menuPic;
     private TextView menuSub;
     private String tempName;
@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navView = findViewById(R.id.nav_view);
 
         hView = navView.inflateHeaderView(R.layout.nav_header);
+        rvView = findViewById(R.id.record_item_view);
 
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
