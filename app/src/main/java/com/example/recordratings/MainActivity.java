@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //Button declaration
     private Button button;
-    private Button dbDelButton;
 
     //Spinner declaration
     private Spinner filter;
@@ -406,6 +405,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             Picasso.get().load(uri).into(menuPic);
                             String dn = user.getDisplayName();
                             menuSub.append(" " + dn);
+                            if(doc.getBoolean("admin") != null){
+                                if(doc.getBoolean("admin")){
+                                    menuSub.append(" " + "(Admin Logged In)");
+                                }
+                            }
                             return;
                         }
                     }else{

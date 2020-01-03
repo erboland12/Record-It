@@ -172,7 +172,7 @@ public class SignInActivity extends AppCompatActivity {
                                 if(photoToString.isEmpty()) {
                                     photoToString = "https://firebasestorage.googleapis.com/v0/b/record-ratings.appspot.com/o/content%3A%2Fcom.android.providers.media.documents%2Fdocument%2Fimage%253A906?alt=media&token=db7295d0-c0c1-4c33-b512-d0a43f7156e4";
                                 }
-                                final User newUser = new User(authResult.getUser().getUid(), email, displayName, photoToString, "Empty");
+                                final User newUser = new User(authResult.getUser().getUid(), email, displayName, photoToString, "Empty", false);
                                 Toast.makeText(getApplicationContext(), "Registering...", Toast.LENGTH_SHORT).show();
                                 db.collection("users").add(newUser)
                                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
