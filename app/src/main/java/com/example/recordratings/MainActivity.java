@@ -364,10 +364,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return shared.getBoolean("darkMode", false);
     }
 
-    public boolean returnCensor(){
-        censorSP = getSharedPreferences("censorPrefs", MODE_PRIVATE);
-        return censorSP.getBoolean("censorOff", false);
-    }
 
     public void readFromDatabase(final FirebaseUser user){
         db = FirebaseFirestore.getInstance();

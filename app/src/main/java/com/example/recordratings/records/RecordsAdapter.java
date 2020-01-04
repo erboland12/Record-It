@@ -124,8 +124,15 @@ public class RecordsAdapter extends
         }else{
             textView.setText(buf.getTitle());
         }
+
         final TextView textView2 = viewHolder.artistTextView;
-        textView2.setText(buf.getArtist());
+        if(buf.getArtist().length() > 28){
+            String shortened = buf.getArtist().substring(0, 25);
+            shortened += "...";
+            textView2.setText(shortened);
+        }else{
+            textView2.setText(buf.getArtist());
+        }
 
         final RatingBar rating = viewHolder.ratingBar;
         rating.setRating((float) (buf.getRating()));

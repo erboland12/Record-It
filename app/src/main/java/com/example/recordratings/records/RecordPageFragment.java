@@ -1,18 +1,23 @@
 package com.example.recordratings.records;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -71,11 +76,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 import javax.annotation.Nullable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -112,6 +119,7 @@ public class RecordPageFragment extends Fragment {
     public static RecyclerView rvComments;
     public CommentsAdapter adapter;
     private ArrayList<Comment> comments = new ArrayList<>();
+    private ArrayList<Comment> tempComments = new ArrayList<>();
 
     //Front-end variables
     public static String idTemp;
@@ -147,6 +155,8 @@ public class RecordPageFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    //Miscellaneous
+    private boolean isAdmin = false;
     public static boolean isDark = false;
     private static final String BUNDLE_RECYCLER_LAYOUT = "classname.recycler.layout";
 
@@ -475,6 +485,23 @@ public class RecordPageFragment extends Fragment {
     }
 
     public void queryComments(){
+        //DB call to determine admin status
+        db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
+                    if(mAuth.getCurrentUser() != null){
+                        if(mAuth.getCurrentUser().getUid().equals(doc.getString("mId"))){
+                            if(doc.getBoolean("admin")){
+                                isAdmin = true;
+                            }
+                        }    
+                    }
+                }
+            }
+        });
+
+        //DB call to load in comment image, id, and timestamp
         db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -496,7 +523,9 @@ public class RecordPageFragment extends Fragment {
                 }
             }
         });
-        db.collection("comments").orderBy(selection, direction).addSnapshotListener(new EventListener<QuerySnapshot>() {
+
+        //DB call to add new comment
+        db.collection("comments").orderBy("mTimestamp", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 for(DocumentSnapshot doc: queryDocumentSnapshots){
@@ -511,21 +540,27 @@ public class RecordPageFragment extends Fragment {
                                 doc.getLong("mVotes").intValue());
 
                         comments.add(newComment);
+                        tempComments.add(newComment);
                     }
+
                 }
 
                 adapter = new CommentsAdapter(comments);
+                if(isAdmin){
+                    new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rvComments);
+                }
                 rvComments.setAdapter(adapter);
                 rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
                 adapter.notifyDataSetChanged();
                 totalComs.setText("Total Comments: " + adapter.getItemCount());
                 comments = new ArrayList<>();
+
             }
         });
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.menu_record_fragment, menu);
         if(returnDark()){
@@ -537,6 +572,20 @@ public class RecordPageFragment extends Fragment {
                 }
             }
         }
+        if(mAuth.getCurrentUser() != null){
+            db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                    for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
+                        if(doc.getString("mId").equals(mAuth.getCurrentUser().getUid())){
+                            if(doc.getBoolean("admin")){
+                                menu.getItem(0).setVisible(true);
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -546,17 +595,129 @@ public class RecordPageFragment extends Fragment {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_home) {
             startActivity(new Intent(getContext(), MainActivity.class));
             return true;
         }
-
-
+        else if (id == R.id.action_admin_del_record){
+            createDeleteRecordAlertDialog();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT){
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int direction) {
+            createDeleteCommentAlertDialog(viewHolder);
+        }
+
+        @Override
+        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            new RecyclerViewSwipeDecorator.Builder(getActivity(), c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(getActivity(), R.color.red))
+                    .addSwipeLeftActionIcon(R.drawable.ic_delete_black_24dp)
+                    .create()
+                    .decorate();
+
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }
+    };
+
+    private void createDeleteRecordAlertDialog(){
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        dialogBuilder.setTitle("Admin Delete Record")
+                .setMessage("Are you Sure you Want to Delete this Record?")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
+                                    if(doc.getString("recId").equals(recId)){
+                                        db.collection("records").document(doc.getId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(getContext(), "Record Deleted By Admin", Toast.LENGTH_SHORT).show();
+                                                getActivity().finish();
+                                            }
+                                        });
+                                        break;
+                                    }
+                                }
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        getActivity().finish();
+                        startActivity(new Intent(getActivity(), RecordsPage.class));
+                    }
+                })
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        getActivity().finish();
+                        startActivity(new Intent(getActivity(), RecordsPage.class));
+                    }
+                }).show();
+    }
+
+    private void createDeleteCommentAlertDialog(final RecyclerView.ViewHolder viewHolder){
+        //Interface for Admin to delete a comment
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        dialogBuilder.setTitle("Admin Delete Comment")
+                .setMessage("Are you Sure you Want to Delete this Comment?")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        final String id = tempComments.get(viewHolder.getAdapterPosition()).getmCommentId();
+                        db.collection("comments").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for(QueryDocumentSnapshot doc: Objects.requireNonNull(task.getResult())){
+                                    if(id.equals(doc.getString("mCommentId"))){
+                                        db.collection("comments").document(doc.getId()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(getContext(), "Comment Deleted By Admin", Toast.LENGTH_SHORT).show();
+                                                rvComments.scrollToPosition(viewHolder.getAdapterPosition());
+                                            }
+                                        });
+                                        break;
+                                    }
+                                }
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        comments.addAll(tempComments);
+                        rvComments.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                    }
+                })
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        comments.addAll(tempComments);
+                        rvComments.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                    }
+                }).show();
     }
 
 

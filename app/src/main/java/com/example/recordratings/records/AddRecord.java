@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -18,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.recordratings.misc.DatabaseHelper;
@@ -46,27 +49,21 @@ import io.grpc.Context;
 public class AddRecord extends AppCompatActivity {
     private int PICK_IMAGE_REQUEST = 1;
     private MovePage m = new MovePage();
-    private EditText albumName;
-    private EditText artistName;
-    private EditText description;
-    private Bitmap photo;
+    private EditText albumName, artistName, description;
+    private TextView descCharCount;
     private RatingBar rating;
     private Spinner genre;
     private String photoToString;
     private ImageView albumCover;
 
-    //Database declarations
-    private DatabaseHelper dbh;
 
     //Button declaration
     private Button browseGalleryBtn;
 
     private SharedPreferences shared;
-    private FirebaseDatabase database;
     private StorageReference mStorageRef;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private com.google.firebase.database.DatabaseReference dbRef;
 
     Random rand1;
     Random rand2;
@@ -86,6 +83,7 @@ public class AddRecord extends AppCompatActivity {
         rating = findViewById(R.id.add_record_rating);
         genre = findViewById(R.id.genre_spinner);
         description = findViewById(R.id.editText3);
+        descCharCount = findViewById(R.id.desc_char_count);
         albumCover = findViewById(R.id.add_record_image_view);
 
         if(returnDark()){
@@ -98,7 +96,6 @@ public class AddRecord extends AppCompatActivity {
         rand3 = new Random();
 
         //Sets up Firebase
-        database = FirebaseDatabase.getInstance();
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -110,9 +107,6 @@ public class AddRecord extends AppCompatActivity {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         genre.setAdapter(adapter);
-
-        //Initializes db helper
-        dbh = new DatabaseHelper(this);
 
         //Allows user to search gallery for photos
         browseGalleryBtn = findViewById(R.id.browse_btn);
@@ -127,6 +121,69 @@ public class AddRecord extends AppCompatActivity {
 
         //Button and listener creation
         final Button mAddBtn = findViewById(R.id.addRecordBtn);
+
+        //Text watcher for edit text fields
+        albumName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() >= 50){
+                    Toast.makeText(getApplicationContext(), "Max Character Count Reached for Album Name", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        artistName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() >= 50){
+                    Toast.makeText(getApplicationContext(), "Max Character Count Reached for Artist Name", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        description.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() > 0){
+                    descCharCount.setText(Integer.toString(s.length()) + "/1000");
+                    descCharCount.setVisibility(View.VISIBLE);
+                }
+
+                if(s.length() >= 1000 ){
+                    Toast.makeText(getApplicationContext(), "Max Character Count Reached for Description", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         mAddBtn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -196,7 +253,6 @@ public class AddRecord extends AppCompatActivity {
                 });
                 final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                 final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                photo = selectedImage;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Something Went Wrong", Toast.LENGTH_LONG).show();
