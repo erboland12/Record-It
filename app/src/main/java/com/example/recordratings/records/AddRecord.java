@@ -42,6 +42,7 @@ import com.squareup.picasso.Picasso;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.Random;
 
 import io.grpc.Context;
@@ -221,9 +222,10 @@ public class AddRecord extends AppCompatActivity {
                     String genre2 = genre.getSelectedItem().toString();
                     String desc = description.getText().toString();
                     String recId = id + Integer.toString(randomNum1) + album + Integer.toString(randomNum2);
+                    long datePosted = Instant.now().getEpochSecond();
 
                     //Creates record item from stored inputs and creates new document in record collection
-                    Records newRecord = new Records(id, album, artist, rating2, photo, genre2, desc, recId);
+                    Records newRecord = new Records(id, album, artist, rating2, photo, genre2, desc, recId, datePosted);
                     db.collection("records").add(newRecord)
                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override

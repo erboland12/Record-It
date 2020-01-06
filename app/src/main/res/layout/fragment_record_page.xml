@@ -30,7 +30,6 @@
                 android:layout_height="275dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="5pt"
-                android:adjustViewBounds="true"
                 tools:srcCompat="@tools:sample/avatars" />
 
             <TextView
@@ -39,8 +38,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:layout_marginStart="10pt"
-                android:layout_marginEnd="10pt"
+                android:layout_marginStart="5pt"
+                android:layout_marginEnd="5pt"
                 android:textColor="@color/colorBlack"
                 android:textSize="40sp" />
 
@@ -50,6 +49,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5pt"
+                android:layout_marginStart="10pt"
+                android:layout_marginEnd="10pt"
                 android:textSize="30sp" />
 
             <View

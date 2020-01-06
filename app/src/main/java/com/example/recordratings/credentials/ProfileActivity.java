@@ -66,6 +66,8 @@ import javax.annotation.Nullable;
 import de.hdodenhof.circleimageview.CircleImageView;
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
+import static com.google.firebase.firestore.Query.Direction.DESCENDING;
+
 public class ProfileActivity extends AppCompatActivity {
 
     //Miscellaneous
@@ -194,7 +196,7 @@ public class ProfileActivity extends AppCompatActivity {
     public void readFromDatabase(){
         db = FirebaseFirestore.getInstance();
         records = new ArrayList<>();
-        db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("records").orderBy("datePostedUnix", DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 int i = 0;
@@ -207,8 +209,9 @@ public class ProfileActivity extends AppCompatActivity {
                     String genre = document.getString("genre");
                     String desc = document.getString("desc");
                     String recId = document.getString("recId");
+                    long date = (long) document.get("datePostedUnix");
                     if(id.equals(uid)){
-                        records.add(new Records(id, album, artist, rating, photo, genre, desc, recId));
+                        records.add(new Records(id, album, artist, rating, photo, genre, desc, recId, date));
                         i++;
                     }
                 }
@@ -452,15 +455,15 @@ public class ProfileActivity extends AppCompatActivity {
                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                            startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
+                        rvRecords.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                         }
                     })
                     .setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
-                        finish();
-                        startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
+                        rvRecords.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     }
                 }).show();
 

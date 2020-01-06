@@ -55,6 +55,8 @@ import javax.annotation.Nullable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.google.firebase.firestore.Query.Direction.DESCENDING;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     //Recycler View variables
     public RecyclerView rvRecords;
@@ -343,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         db = FirebaseFirestore.getInstance();
         records = new ArrayList<>();
         //Database query to store all record documents as objects
-        db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("records").orderBy("datePostedUnix", DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 for (DocumentSnapshot document : queryDocumentSnapshots) {
@@ -354,8 +356,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     String photo = document.getString("mPhotoString");
                     String genre = document.getString("genre");
                     String desc = document.getString("desc");
-                    String recId = "test";
-                    records.add(new Records(id, album, artist, rating, photo, genre, desc, recId));
+                    String recId = document.getString("recId");
+                    long date = (long) document.get("datePostedUnix");
+                    records.add(new Records(id, album, artist, rating, photo, genre, desc, recId, date));
                 }
                 adapter = new RecordsAdapter(records);
                 rvRecords.setAdapter(adapter);

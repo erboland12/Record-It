@@ -445,7 +445,7 @@ public class RecordPageFragment extends Fragment {
 
         photo = view.findViewById(R.id.records_page_image);
         Uri uri = Uri.parse(photoStringTemp);
-        Picasso.get().load(uri).into(photo);
+        Picasso.get().load(uri).fit().centerCrop().into(photo);
 
         description = view.findViewById(R.id.records_page_desc);
         description.setText(descTemp);

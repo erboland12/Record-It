@@ -1,31 +1,19 @@
 package com.example.recordratings.records;
 
-import android.graphics.Bitmap;
-
-import com.google.firebase.firestore.Blob;
-
-import java.util.ArrayList;
-
 public class Records {
     private String mId;
     private String mTitle;
     private String mArtist;
     private double mRating;
-    private Bitmap mPhoto;
     private String mPhotoString;
     private String mGenre;
     private String mDescription;
     private String mRecId;
+    private long mDatePostedUnix;
 
-    public Records() {}
 
-    public Records(String id, String title, String artist){
-        mId = id;
-        mTitle = title;
-        mArtist = artist;
-    }
-
-    public Records(String id, String title, String artist, double rating, String photo, String genre, String description, String recId){
+    public Records(String id, String title, String artist, double rating, String photo, String genre,
+                   String description, String recId, long datePostedUnix) {
         mId = id;
         mTitle = title;
         mArtist = artist;
@@ -34,6 +22,7 @@ public class Records {
         mGenre = genre;
         mDescription = description;
         mRecId = recId;
+        mDatePostedUnix = datePostedUnix;
     }
 
     public String getId() { return mId; }
@@ -50,10 +39,6 @@ public class Records {
         return mRating;
     }
 
-    public Bitmap getPhoto(){
-        return mPhoto;
-    }
-
     public String getmPhotoString() { return mPhotoString; }
 
     public String getGenre(){
@@ -65,5 +50,7 @@ public class Records {
     }
 
     public String getRecId(){ return mRecId; }
+
+    public long getDatePostedUnix(){ return mDatePostedUnix; }
 
 }

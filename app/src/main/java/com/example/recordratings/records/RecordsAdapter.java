@@ -113,7 +113,7 @@ public class RecordsAdapter extends
         // Set item views based on your views and data model
         final ImageView imageView = viewHolder.photoImageView;
         Uri uri = Uri.parse(buf.getmPhotoString());
-        Picasso.get().load(uri).into(imageView);
+        Picasso.get().load(uri).fit().centerCrop().into(imageView);
 
         final TextView textView = viewHolder.albumTextView;
         if(buf.getTitle().length() > 21){
@@ -136,10 +136,10 @@ public class RecordsAdapter extends
         final RatingBar rating = viewHolder.ratingBar;
         rating.setRating((float) (buf.getRating()));
 
-        final View view = viewHolder.view;
-        if(position == 0){
-            view.setVisibility(View.INVISIBLE);
-        }
+//        final View view = viewHolder.view;
+//        if(position == 0){
+//            view.setVisibility(View.INVISIBLE);
+//        }
 
         //Item click listener for each entry in rv
         viewHolder.itemView.setOnClickListener(new View.OnClickListener(){
@@ -152,7 +152,6 @@ public class RecordsAdapter extends
                 RecordPageFragment.albumTemp = buf.getTitle();
                 RecordPageFragment.artistTemp = buf.getArtist();
                 RecordPageFragment.ratingTemp = buf.getRating();
-                RecordPageFragment.photoTemp = buf.getPhoto();
                 RecordPageFragment.genreTemp = buf.getGenre();
 
                 //Censors description text

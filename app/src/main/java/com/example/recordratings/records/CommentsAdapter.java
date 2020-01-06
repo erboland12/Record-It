@@ -163,9 +163,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         dateText.setText(" - " + com.getmTimestamp());
 
         //Disables top view
-        if(position == 0){
-            comment_view.setVisibility(View.INVISIBLE);
-        }
+//        if(position == 0){
+//            comment_view.setVisibility(View.INVISIBLE);
+//        } else{
+//            comment_view.setVisibility(View.VISIBLE);
+//        }
 
         //Hides reply icon for all comments from current user
         if(mAuth.getCurrentUser() != null){

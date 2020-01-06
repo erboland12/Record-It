@@ -31,8 +31,9 @@
             android:layout_marginTop="5pt"
             android:backgroundTint="?attr/textcolor"
             android:hint="@string/email"
+            android:inputType="text"
             android:textColor="?attr/textcolor"
-            android:textSize="30sp" />
+            android:textSize="24sp" />
 
         <EditText
             android:id="@+id/passText"
@@ -42,7 +43,7 @@
             android:hint="@string/password"
             android:inputType="textPassword"
             android:textColor="?attr/textcolor"
-            android:textSize="30dp" />
+            android:textSize="24sp" />
 
         <Button
             android:id="@+id/logged"
