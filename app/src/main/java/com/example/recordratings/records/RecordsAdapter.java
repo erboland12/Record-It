@@ -46,11 +46,10 @@ import javax.annotation.Nullable;
 
 import static android.content.Context.MODE_PRIVATE;
 
+//Adapter that handles record items in recycler view
 public class RecordsAdapter extends
     RecyclerView.Adapter<RecordsAdapter.ViewHolder> {
 
-    private FirebaseFirestore db;
-    private FirebaseAuth mAuth;
     private SharedPreferences censorSP;
     private boolean isCensored;
 
@@ -64,24 +63,24 @@ public class RecordsAdapter extends
         private ViewHolder(View itemView){
             super(itemView);
 
-            db = FirebaseFirestore.getInstance();
-            mAuth = FirebaseAuth.getInstance();
-
+            //Links front end variables to item view
             albumTextView = itemView.findViewById(R.id.album);
             artistTextView = itemView.findViewById(R.id.artist);
             ratingBar = itemView.findViewById(R.id.rating);
             photoImageView = itemView.findViewById(R.id.photo);
             view = itemView.findViewById(R.id.record_item_view);
 
+            //Call for censorship shared preference
             censorSP = itemView.getContext().getSharedPreferences("censorPrefs", MODE_PRIVATE);
         }
 
+        //Determines if censor preference is disabled
         private boolean returnCensor(){
             isCensored = censorSP.getBoolean("censorOff", false);
             return isCensored;
         }
-
     }
+
 
     private List<Records> mRecords;
     public List<Records> mRecordsCopy = new ArrayList<>();
@@ -142,17 +141,21 @@ public class RecordsAdapter extends
             view.setVisibility(View.INVISIBLE);
         }
 
+        //Item click listener for each entry in rv
         viewHolder.itemView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 MovePage m = new MovePage();
-                Log.d("Word", "Up");
+
+                //Stores values from item into record page fragment
                 RecordPageFragment.idTemp = buf.getId();
                 RecordPageFragment.albumTemp = buf.getTitle();
                 RecordPageFragment.artistTemp = buf.getArtist();
                 RecordPageFragment.ratingTemp = buf.getRating();
                 RecordPageFragment.photoTemp = buf.getPhoto();
                 RecordPageFragment.genreTemp = buf.getGenre();
+
+                //Censors description text
                 if(!viewHolder.returnCensor()){
                     Censor censor = new Censor();
                     RecordPageFragment.descTemp = censor.censorText(buf.getDesc());

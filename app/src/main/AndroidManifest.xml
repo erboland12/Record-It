@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.recordratings">
 
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
     <application
-        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".credentials.ProfileActivity"
-            android:theme="@style/MainTheme"></activity>
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity
+            android:name=".credentials.ProfileActivity"
+            android:theme="@style/MainTheme" />
         <activity android:name=".MyRecordsActivity" />
         <activity android:name=".credentials.SignInActivity" />
         <activity android:name=".credentials.LoginActivity" />
-        <activity android:name=".settings.PopupRatingActivity" />
-        <activity android:name=".settings.PopupFeedbackActivity" />
-        <activity android:name=".records.EditRecord" />
         <activity android:name=".settings.SettingsActivity" />
         <activity
             android:name=".records.RecordsPage"
@@ -32,7 +33,5 @@
             </intent-filter>
         </activity>
     </application>
-
-    <uses-permission android:name="android.permission.SEND_SMS" />
 
 </manifest>

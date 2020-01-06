@@ -47,15 +47,18 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SignInActivity extends AppCompatActivity {
 
+    //Profile picture variables
     private int PICK_IMAGE_REQUEST = 1;
     private String photoToString = "";
 
+    //Front-end variables
     private LinearLayout mSignLayout;
     private android.widget.EditText mEmail, mDisplay, mPassword, mConfirmPassword;
     private android.widget.Button mSubmitBtn;
     private android.widget.Button mSelectPhotoBtn;
     private CircleImageView mProfilePreview;
 
+    //Shared preferences and database variables
     private SharedPreferences shared;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -64,6 +67,7 @@ public class SignInActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Determines styling if night mode preference is enabled
         if(returnDark()){
             setTheme(R.style.darkTheme);
         }
@@ -71,6 +75,7 @@ public class SignInActivity extends AppCompatActivity {
         setTitle("Register Account");
         setContentView(R.layout.activity_sign_in);
 
+        //Initializes front-end variables
         mSignLayout = findViewById(R.id.signUpLayout);
         mEmail = findViewById(R.id.emailText);
         mDisplay = findViewById(R.id.displayNameText);
@@ -80,6 +85,7 @@ public class SignInActivity extends AppCompatActivity {
         mSelectPhotoBtn = findViewById(R.id.sign_up_select_img);
         mProfilePreview = findViewById(R.id.sign_up_img_view);
 
+        //Text change listener for display name
         mDisplay.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -99,6 +105,7 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
+        //Text change listener for password
         mPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -123,6 +130,7 @@ public class SignInActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
+        //Button listener for choosing profile picture
         mSelectPhotoBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -130,15 +138,17 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
-
+        //Button listener for submitting a new registration
         mSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+                //Stores values from edit texts as strings
                 final String email = mEmail.getText().toString();
                 final String displayName = mDisplay.getText().toString();
                 String password = mPassword.getText().toString();
                 String confirm = mConfirmPassword.getText().toString();
 
+                //DB query to determine if display name is in use
                 db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
@@ -152,26 +162,32 @@ public class SignInActivity extends AppCompatActivity {
                     }
                 });
 
-
+                //Determines valid input for edit texts
                 if(verifyCredentials(email, displayName, password, confirm)){
+                    //Signs out current user if logged in
                     if(mAuth != null){
                         mAuth.signOut();
                     }
+
                     if(dnInUse){
                         dnInUse = false;
                     }else{
+                        //Calls auth method to create new user
                         mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                             @Override
                             public void onSuccess(final AuthResult authResult) {
+                                //Links display name to auth
                                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                                 UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                                         .setDisplayName(displayName).build();
-
                                 user.updateProfile(profileUpdate);
 
+                                //Defaults to empty profile pic if no image is chosen
                                 if(photoToString.isEmpty()) {
                                     photoToString = "https://firebasestorage.googleapis.com/v0/b/record-ratings.appspot.com/o/content%3A%2Fcom.android.providers.media.documents%2Fdocument%2Fimage%253A906?alt=media&token=db7295d0-c0c1-4c33-b512-d0a43f7156e4";
                                 }
+
+                                //Creates user to be added to firebase collection
                                 final User newUser = new User(authResult.getUser().getUid(), email, displayName, photoToString, "Empty", false);
                                 Toast.makeText(getApplicationContext(), "Registering...", Toast.LENGTH_SHORT).show();
                                 db.collection("users").add(newUser)
@@ -205,6 +221,7 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
+        //Additional styling if night mode preference is on
         if(returnDark()){
             mSignLayout.setBackgroundColor(getResources().getColor(R.color.darkModeBack));
             mEmail.setHintTextColor(getResources().getColor(R.color.hintDarkModeColor));
@@ -215,11 +232,13 @@ public class SignInActivity extends AppCompatActivity {
         }
     }
 
+    //Determines if night mode is enabled
     private boolean returnDark() {
         shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
         return shared.getBoolean("darkMode", false);
     }
 
+    //Validates input to ensure clean fields
     private boolean verifyCredentials(String email, String displayName, String password, String confirmPassword) {
         if (email.isEmpty() || displayName.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             Toast.makeText(this, "One of the Fields is Empty.  Try Again.", Toast.LENGTH_LONG).show();
@@ -242,13 +261,7 @@ public class SignInActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-    }
-
+    //Opens gallery to choose profile picture
     public void chooseImage() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -256,10 +269,9 @@ public class SignInActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
+    //Loads chosen picture into image view
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-
         if (resultCode == RESULT_OK) {
             try {
                 final Uri imageUri = data.getData();
@@ -278,14 +290,13 @@ public class SignInActivity extends AppCompatActivity {
                     }
                 });
                 final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Something Went Wrong.  Please Try Again", Toast.LENGTH_LONG).show();
             }
 
         }else {
-            Toast.makeText(this, "You haven't picked Image",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No Image Selected.",Toast.LENGTH_LONG).show();
         }
     }
 }

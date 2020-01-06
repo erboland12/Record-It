@@ -56,25 +56,19 @@ import javax.annotation.Nullable;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    //Records global
+    //Recycler View variables
     public RecyclerView rvRecords;
     public static ArrayList<Records> records = new ArrayList<>();
     private ArrayList<Records> tempRecords = new ArrayList<>();
-    private TextView emptyRv;
-    private View hView, rvView;
+    public RecordsAdapter adapter;
+
+    //Front-end variables
+    private View hView;
     private CircleImageView menuPic;
     private TextView menuSub;
-    private String tempName;
 
     //Intent module call
     MovePage m = new MovePage();
-
-    //Database module call
-    DatabaseHelper dbh;
-    public RecordsAdapter adapter;
-
-    //Button declaration
-    private Button button;
 
     //Spinner declaration
     private Spinner filter;
@@ -86,9 +80,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
 
+    //Nav view layout
     NavigationView navView;
 
-    private SharedPreferences shared, censorSP;
+    //Shared preference, fireauth, and firestore
+    private SharedPreferences shared;
     private FirebaseAuth mAuth;
     private com.google.firebase.firestore.FirebaseFirestore db;
 
@@ -110,9 +106,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close);
         navView = findViewById(R.id.nav_view);
 
+        //Inflates header for navigation view
         hView = navView.inflateHeaderView(R.layout.nav_header);
-        rvView = findViewById(R.id.record_item_view);
 
+        //Handles creation of drawer layout
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
 
@@ -120,14 +117,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        dbh = new DatabaseHelper(this);
-        //dbh.onCreate(dbh.getWritableDatabase());
 
         //Initializes RV w/ adapter
         rvRecords = findViewById(R.id.rvRecords);
         adapter = new RecordsAdapter(records);
         rvRecords.setAdapter(adapter);
-        emptyRv = findViewById(R.id.no_records);
 
         //Sets up search view and filter spinner
         search = findViewById(R.id.action_search);
@@ -143,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Makes initial call to load db contents into RV and creates listener for only showing
         //filter when search icon is clicked.
 
+        //Icon click listener that sets filter visibility
         search.setOnSearchClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -150,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        //Icon close listener that hides filter
         search.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
@@ -158,32 +154,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-
+        //Populates filter spinner with sort options
         populateFilter();
 
+        //Handles filtering recycler view when search is sued
         searchRV();
-
-        rvRecords.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Toast toast = Toast.makeText(MainActivity.this, "Word", Toast.LENGTH_SHORT);
-                toast.show();
-            }
-        });
-
-
-        button = findViewById(R.id.main_add_button);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v){
-                m.moveActivity(MainActivity.this, AddRecord.class);
-            }
-        });
 
     }
 
 
-
+    //Handles custom menu icons and actions
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -204,12 +184,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu)
-    {
-        return true;
-    }
-
+    //Handles menu icon selection actions
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -230,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
+    //Handles navigation view item selection
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
@@ -248,7 +224,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             }
             case R.id.my_profile: {
-                MovePage m = new MovePage();
                 if(mAuth.getCurrentUser() != null){
                     ProfileActivity.uid = mAuth.getCurrentUser().getUid();
                     startActivity(new Intent(MainActivity.this, ProfileActivity.class));
@@ -279,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setNavigationViewListener() {
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -340,6 +315,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    //Populates filter spinner with options to filter by
     private void populateFilter(){
         filter = findViewById(R.id.filter_spinner);
 
@@ -350,28 +326,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         filter.setPrompt("Title");
     }
 
-    public static Bitmap getImage(byte[] image) {
-        return BitmapFactory.decodeByteArray(image, 0, image.length);
-    }
-
+    //Closes activity on back pressed
     @Override
     public void onBackPressed() {
         this.finishAffinity();
     }
 
+    //Determines if night mode preference is enabled
     public boolean returnDark(){
         shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
         return shared.getBoolean("darkMode", false);
     }
 
-
+    //Reads in record collections to add to unfiltered recycler view
     public void readFromDatabase(final FirebaseUser user){
         db = FirebaseFirestore.getInstance();
         records = new ArrayList<>();
+        //Database query to store all record documents as objects
         db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                Censor censor = new Censor();
                 for (DocumentSnapshot document : queryDocumentSnapshots) {
                     String id = document.get("id").toString();
                     String album = document.getString("title");
@@ -391,6 +365,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        //Database query for loading profile picture into navigation image view
         db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -401,6 +376,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             Picasso.get().load(uri).into(menuPic);
                             String dn = user.getDisplayName();
                             menuSub.append(" " + dn);
+                            //Displays additional text if user is granted admin status
                             if(doc.getBoolean("admin") != null){
                                 if(doc.getBoolean("admin")){
                                     menuSub.append(" " + "(Admin Logged In)");
@@ -418,6 +394,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         tempRecords = new ArrayList<>();
     }
 
+    //Handles start-up actions
     @Override
     public void onStart(){
         super.onStart();

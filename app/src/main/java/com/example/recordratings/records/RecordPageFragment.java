@@ -100,7 +100,7 @@ public class RecordPageFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    //Text View for album and artist names
+    //Front end variables
     private LinearLayout layout, addComLayout, rvLayout;
     private TextView album;
     private TextView artist;
@@ -113,7 +113,6 @@ public class RecordPageFragment extends Fragment {
     private TextView totalComs, createrName;
     public static Spinner sortCommentsBy;
     private View view1;
-    private View view2;
 
     //Comment section
     public static RecyclerView rvComments;
@@ -136,12 +135,7 @@ public class RecordPageFragment extends Fragment {
     private String recId = "";
     private String commentId = "";
     private ArrayAdapter<String> selectionAdapter;
-    public static String selection = CommentsAdapter.commentSelection;
-    private Query.Direction direction = Query.Direction.DESCENDING;
-
-    //Buttons
     private Button commentBtn;
-    private MovePage m;
 
     //Database helper
     private FirebaseAuth mAuth;
@@ -152,8 +146,6 @@ public class RecordPageFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
 
     //Miscellaneous
     private boolean isAdmin = false;
@@ -199,11 +191,11 @@ public class RecordPageFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_record_page, container, false);
 
+        //Initializes all front end variables in fragment
         layout = view.findViewById(R.id.record_page_layout);
         rvLayout = view.findViewById(R.id.rvLayout);
         addComLayout = view.findViewById(R.id.add_comment_section);
         view1 = view.findViewById(R.id.view);
-        view2 = view.findViewById(R.id.view2);
         description = view.findViewById(R.id.records_page_desc);
         totalComs = view.findViewById(R.id.total_comments);
         commentBox = view.findViewById(R.id.comment_box);
@@ -218,17 +210,21 @@ public class RecordPageFragment extends Fragment {
         rvComments.setAdapter(adapter);
         rvComments.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        //Sets up censor shared preference
         censorSP = view.getContext().getSharedPreferences("censorPrefs", MODE_PRIVATE);
 
+        //Handles custom toolbar
         Toolbar toolbar = view.findViewById(R.id.fragment_toolbar);
         toolbar.setFitsSystemWindows(true);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
 
+        //Creates options and adapter for sort spinner
         String[] sorts = {"Recently Added", "Highest Rated"};
         selectionAdapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_spinner_dropdown_item, sorts);
 
+        //Additional styling if night mode preference is enabled
         if(returnDark()){
             description.setBackground(getResources().getDrawable(R.drawable.dark_layout_border));
             description.setPadding(20, 20, 20, 20);
@@ -241,6 +237,7 @@ public class RecordPageFragment extends Fragment {
             selectionAdapter.setDropDownViewResource(R.layout.spinner_drop_box);
         }
 
+        //Censors description text if censor is disabled
         if(!returnCensor()){
             Censor censor = new Censor();
             String desc = description.getText().toString();
@@ -248,15 +245,15 @@ public class RecordPageFragment extends Fragment {
         }
         sortCommentsBy.setAdapter(selectionAdapter);
 
+        //Database helper stuff
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-
-
         if(mAuth.getCurrentUser() != null){
             displayName = mAuth.getCurrentUser().getDisplayName();
             userId = mAuth.getCurrentUser().getUid();
         }
 
+        //Button listener for opening profile of user that posted record
         createrPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -276,6 +273,7 @@ public class RecordPageFragment extends Fragment {
             }
         });
 
+        //Database query to obtain record id
         db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -289,36 +287,33 @@ public class RecordPageFragment extends Fragment {
             }
         });
 
-        if(sortCommentsBy.getSelectedItem().toString().equals("Highest Rated")){
-            selection = "mVotes";
-        } else if(sortCommentsBy.getSelectedItem().toString().equals("Recently Added")){
-            selection = "mTimestamp";
-        }
-
+        //Pulls all comments for a specific record
         queryComments();
 
-        sortCommentsBy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                selection = CommentsAdapter.commentSelection;
-                if(sortCommentsBy.getSelectedItem().toString().equals("Highest Rated")){
-                    selection = "mVotes";
-                }
-                else if (sortCommentsBy.getSelectedItem().toString().equals("Recently Added")){
-                    selection = "mTimestamp";
-                }
-                rvComments.scrollToPosition(0);
-                queryComments();
-                selection = " ";
-            }
+        //Sets selection action on spinner item select
+//        sortCommentsBy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+////                selection = CommentsAdapter.commentSelection;
+//                if(sortCommentsBy.getSelectedItem().toString().equals("Highest Rated")){
+//                    selection = "mVotes";
+//                }
+//                else if (sortCommentsBy.getSelectedItem().toString().equals("Recently Added")){
+//                    selection = "mTimestamp";
+//                }
+//                rvComments.scrollToPosition(0);
+//                queryComments();
+//                selection = " ";
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//                queryComments();
+//            }
+//        });
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                queryComments();
-            }
-        });
 
-
+        //Text change listener for comment edit text
         commentBox.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -351,23 +346,30 @@ public class RecordPageFragment extends Fragment {
             }
         });
 
-
+        //Button listener for creating a comment
         commentBtn.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                //Prevents anonymous users from commenting
                 if(mAuth.getCurrentUser() == null){
                     Toast.makeText(v.getContext(), "You Must be Logged In to Comment", Toast.LENGTH_SHORT).show();
                 }else{
+
                     String contents = commentBox.getText().toString();
                     Random rand1 = new Random();
                     Random rand2 = new Random();
-
                     int randomNum1 = rand1.nextInt(99999999);
                     int randomNum2 = rand2.nextInt(99999999);
+
+                    //Creates date format to record timestamp
                     DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                     Date date = new Date();
+
+                    //Generates unique comment id
                     commentId = mAuth.getUid()  + Integer.toString(randomNum1) + mAuth.getCurrentUser().getDisplayName() + Integer.toString(randomNum2);
+
+                    //Database call to add new comment
                     db.collection("comments").add(new Comment(displayName, contents, df.format(date), userId, recId, commentId, photoString, 0)).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
@@ -379,6 +381,7 @@ public class RecordPageFragment extends Fragment {
             }
         });
 
+        //Loads in picture for comment
         if(mAuth.getCurrentUser() != null){
             final FirebaseUser user = mAuth.getCurrentUser();
             db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -398,6 +401,8 @@ public class RecordPageFragment extends Fragment {
             });
         }
         setDetailViewVariables(view);
+
+        //Additional styling if night mode is enabled
         if(isDark) {
             view1.setBackgroundColor(getResources().getColor(R.color.colorWhite));
             album.setTextColor(getResources().getColor(R.color.colorWhite));
@@ -446,11 +451,13 @@ public class RecordPageFragment extends Fragment {
         description.setText(descTemp);
     }
 
+    //Determines if night mode preference is enabled
     private boolean returnDark(){
         shared = getActivity().getSharedPreferences("DarkMode", MODE_PRIVATE);
         return shared.getBoolean("darkMode", false);
     }
 
+    //Determines if censor preference is disabled
     private boolean returnCensor(){
         isCensored = censorSP.getBoolean("censorOff", false);
         return isCensored;
@@ -459,7 +466,6 @@ public class RecordPageFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
-
     }
     
 
@@ -484,6 +490,7 @@ public class RecordPageFragment extends Fragment {
         outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, rvComments.getLayoutManager().onSaveInstanceState());
     }
 
+    //Various database calls. See comments above each query
     public void queryComments(){
         //DB call to determine admin status
         db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -559,6 +566,7 @@ public class RecordPageFragment extends Fragment {
         });
     }
 
+    //Handles custom menu icons and actions
     @Override
     public void onCreateOptionsMenu(final Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -590,6 +598,7 @@ public class RecordPageFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    //Handles custom menu item slection
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -609,6 +618,7 @@ public class RecordPageFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    //Item touch helper that allows swipe function for recycler view
     ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT){
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -632,6 +642,7 @@ public class RecordPageFragment extends Fragment {
         }
     };
 
+    //Creates alert dialog for deleting a record
     private void createDeleteRecordAlertDialog(){
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
         dialogBuilder.setTitle("Admin Delete Record")
@@ -674,6 +685,7 @@ public class RecordPageFragment extends Fragment {
                 }).show();
     }
 
+    //Creates alert dialog for deleting a comment
     private void createDeleteCommentAlertDialog(final RecyclerView.ViewHolder viewHolder){
         //Interface for Admin to delete a comment
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
@@ -719,6 +731,4 @@ public class RecordPageFragment extends Fragment {
                     }
                 }).show();
     }
-
-
 }

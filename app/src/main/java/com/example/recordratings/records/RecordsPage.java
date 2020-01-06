@@ -35,6 +35,7 @@ public class RecordsPage extends AppCompatActivity implements RecordPageFragment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Styles page for night mode if preference is enabled
         if(returnDark()){
             setTheme(R.style.darkThemeNoBar);
             RecordPageFragment.isDark = true;
@@ -61,6 +62,7 @@ public class RecordsPage extends AppCompatActivity implements RecordPageFragment
 
     }
 
+    //Determines if night mode preference is enabled
     private boolean returnDark(){
         shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
         return shared.getBoolean("darkMode", false);

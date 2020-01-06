@@ -27,18 +27,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, 1);
     }
 
+    //Creates SQLite database table
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("CREATE TABLE " + RECORDS_TABLE + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, ALBUM TEXT, ARTIST TEXT, RATING DOUBLE, " +
                 "                                                PHOTO BLOB, GENRE TEXT, DESCRIPTION VARCHAR(1000))");
     }
 
+    //Upgrades table after dropping current instance
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + RECORDS_TABLE);
         onCreate(sqLiteDatabase);
     }
 
+    //
     public boolean insertData(String album, String artist, double rating, byte[] photo, String genre, String description){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -71,28 +74,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                "' WHERE ID = " + id, null);
 
         return true;
-    }
-
-    public Integer deleteData(String row) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(RECORDS_TABLE, "id=?", new String[]{row});
-    }
-
-    public Integer deleteRecord(String row, int id){
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + RECORDS_TABLE, null);
-        do{
-            if(id == cursor.getInt(0)){
-                return db.delete(RECORDS_TABLE, "id=?", new String[]{row});
-            }
-        } while(cursor.moveToNext());
-        return -1;
-    }
-
-    public Cursor getAllData(){
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("SELECT * FROM " + RECORDS_TABLE, null);
-        return res;
     }
 
 }

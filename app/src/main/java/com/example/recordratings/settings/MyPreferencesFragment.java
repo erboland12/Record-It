@@ -48,8 +48,7 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
     private SharedPreferences shared;
     private SharedPreferences.Editor editor;
 
-    private TextView ratingHeader, ratingSub;
-    private RatingBar fixedRating;
+    //Front-end variables
     private EditText feedbackEdit, reportEdit;
     private Button ratingBtn, feedbackBtn, reportBtn;
     private Spinner reportOptions;
@@ -65,18 +64,15 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
     private SmsManager smgr;
 
 
-
-
-    private boolean isDark = false;
-
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        if(returnDark()){
-
-        }
         setPreferencesFromResource(R.xml.preferences, rootKey);
+
+        //Initializes database variables
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+
+        //Links rating preference and creates on preference listener for opening dialog
         rating = findPreference("SayThanks");
         rating.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -86,17 +82,16 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
                 final View dialogView = inflater.inflate(R.layout.rating_dialog_box, null);
                 dialogBuilder.setView(dialogView);
 
-                ratingHeader = dialogView.findViewById(R.id.pop_Title);
-                ratingSub = dialogView.findViewById(R.id.pop_sub_title);
-                fixedRating = dialogView.findViewById(R.id.fixed_rating);
                 ratingBtn = dialogView.findViewById(R.id.rating_btn);
 
                 final AlertDialog alertDialog = dialogBuilder.create();
                 alertDialog.show();
 
+                //Button listener for rating button
                 ratingBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        //Directs user to google play home screen
                         String url = "https://play.google.com/store/apps";
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setData(Uri.parse(url));
@@ -108,6 +103,7 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
             }
         });
 
+        //Feedback preference click listener
         feedback = findPreference("feedback");
         feedback.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -156,7 +152,7 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
 
         censorSP = getActivity().getSharedPreferences("censorPrefs", Context.MODE_PRIVATE);
 
-        darkMode = (SwitchPreference) findPreference("darkMode");
+        darkMode = findPreference("darkMode");
         disableCensorship = findPreference("disableCensor");
 
         editor = shared.edit();

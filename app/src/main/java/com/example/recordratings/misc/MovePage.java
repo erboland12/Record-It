@@ -2,19 +2,10 @@ package com.example.recordratings.misc;
 
 import android.content.Context;
 import android.content.Intent;
-
+//Basically just a modularized version of intent.  Consider replacing...
 public class MovePage {
     public void moveActivity(Context current, Class<?> nav){
         Intent intent = new Intent(current, nav);
         current.startActivity(intent);
     }
-
-    public void moveData(Context current, Class<?> nav, String id, int data){
-        Intent intent = new Intent(current, nav);
-        intent.putExtra(id, data);
-        current.startActivity(intent);
-    }
-
-
-
 }

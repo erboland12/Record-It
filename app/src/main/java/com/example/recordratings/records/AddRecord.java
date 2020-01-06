@@ -47,50 +47,56 @@ import java.util.Random;
 import io.grpc.Context;
 
 public class AddRecord extends AppCompatActivity {
+    //Image request constant and movePage call
     private int PICK_IMAGE_REQUEST = 1;
     private MovePage m = new MovePage();
+
+    //Front end variables
     private EditText albumName, artistName, description;
     private TextView descCharCount;
     private RatingBar rating;
     private Spinner genre;
     private String photoToString;
     private ImageView albumCover;
-
-
-    //Button declaration
     private Button browseGalleryBtn;
 
+    //Shared preferences, storage, auth, and db declarations
     private SharedPreferences shared;
     private StorageReference mStorageRef;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
+    //Random nums for creating unique record id
     Random rand1;
     Random rand2;
     Random rand3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Determines styling if night mode preference is enabled
         if(returnDark()){
             setTheme(R.style.darkTheme);
         }
         setContentView(R.layout.activity_add_record);
 
-
         //Input edit text values into global variables
-        albumName = (EditText) findViewById(R.id.editText);
-        artistName = (EditText) findViewById(R.id.editText2);
+        albumName = findViewById(R.id.editText);
+        artistName = findViewById(R.id.editText2);
         rating = findViewById(R.id.add_record_rating);
         genre = findViewById(R.id.genre_spinner);
         description = findViewById(R.id.editText3);
         descCharCount = findViewById(R.id.desc_char_count);
         albumCover = findViewById(R.id.add_record_image_view);
 
+        //Additional styling if night mode is enabled
         if(returnDark()){
             albumName.setHintTextColor(getResources().getColor(R.color.hintDarkModeColor));
             artistName.setHintTextColor(getResources().getColor(R.color.hintDarkModeColor));
         }
 
+        //Initializes random numbers
         rand1 = new Random();
         rand2 = new Random();
         rand3 = new Random();
@@ -104,7 +110,6 @@ public class AddRecord extends AppCompatActivity {
         String[] items = new String[]{"Pop", "Rock", "Jazz", "Blues", "Rap", "Country", "Folk",
                                       "Metal", "Progressive", "Psychedelic", "Punk", "Alternative",
                                       "Indie", "Classical", "Other"};
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         genre.setAdapter(adapter);
 
@@ -122,7 +127,7 @@ public class AddRecord extends AppCompatActivity {
         //Button and listener creation
         final Button mAddBtn = findViewById(R.id.addRecordBtn);
 
-        //Text watcher for edit text fields
+        //Text watcher for album name edit text
         albumName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -142,6 +147,7 @@ public class AddRecord extends AppCompatActivity {
             }
         });
 
+        //Text watcher for artist name edit text
         artistName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -161,6 +167,7 @@ public class AddRecord extends AppCompatActivity {
             }
         });
 
+        //Text watcher for description edit text
         description.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -185,8 +192,10 @@ public class AddRecord extends AppCompatActivity {
             }
         });
 
+        //Button listener that handles adding new button
         mAddBtn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                //Validation check to make sure no empty inputs are sent through
                 if(albumName.getEditableText().toString().isEmpty() ||
                    artistName.getEditableText().toString().isEmpty() ||
                    description.getEditableText().toString().isEmpty()){
@@ -194,13 +203,16 @@ public class AddRecord extends AppCompatActivity {
                     return;
                 }
                 else{
+                    //Creates random numbers between 1 and 10000000
                     int randomNum1 = rand1.nextInt(10000000);
                     int randomNum2 = rand2.nextInt(10000000);
 
+                    //Defaults to empty record string if no photo is chosen
                     if(photoToString == null){
                         photoToString = "https://firebasestorage.googleapis.com/v0/b/record-ratings.appspot.com/o/content%3A%2Fcom.android.providers.downloads.documents%2Fdocument%2F2695?alt=media&token=d8740fa6-6385-4eb7-bc6c-8b6d9b78dc40";
                     }
 
+                    //Stores values from front end inputs to be put into record item
                     String id = mAuth.getUid();
                     String album = albumName.getText().toString();
                     String artist = artistName.getText().toString();
@@ -210,11 +222,13 @@ public class AddRecord extends AppCompatActivity {
                     String desc = description.getText().toString();
                     String recId = id + Integer.toString(randomNum1) + album + Integer.toString(randomNum2);
 
+                    //Creates record item from stored inputs and creates new document in record collection
                     Records newRecord = new Records(id, album, artist, rating2, photo, genre2, desc, recId);
                     db.collection("records").add(newRecord)
                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override
                                 public void onSuccess(DocumentReference documentReference) {
+                                    //Moves back to main activity on successful creation
                                     m.moveActivity(AddRecord.this, MainActivity.class);
                                 }
                             });
@@ -223,6 +237,7 @@ public class AddRecord extends AppCompatActivity {
         });
     }
 
+    //Creates intent to open gallery
     public void chooseImage() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -230,10 +245,9 @@ public class AddRecord extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
+    //Handles action of chosen image
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-
         if (resultCode == RESULT_OK) {
             try {
                 final Uri imageUri = data.getData();
@@ -252,42 +266,19 @@ public class AddRecord extends AppCompatActivity {
                     }
                 });
                 final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                Toast.makeText(this, "Something Went Wrong", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Something Went Wrong.  Please Try Again.", Toast.LENGTH_LONG).show();
             }
 
         }else {
-            Toast.makeText(this, "No Image Selected",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No Image Has Been Selected.",Toast.LENGTH_LONG).show();
         }
     }
 
-    // convert from bitmap to byte array
-    public static byte[] getBytes(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
-        return stream.toByteArray();
-    }
-
-    // convert from byte array to bitmap
-    public static Bitmap getImage(byte[] image) {
-        return BitmapFactory.decodeByteArray(image, 0, image.length);
-    }
-
-    public String BitMapToString(Bitmap bitmap){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
-        byte [] b=baos.toByteArray();
-        String temp = Base64.encodeToString(b, Base64.DEFAULT);
-        return temp;
-    }
-
+    //Determines if night mode preference is enabled.
     private boolean returnDark(){
         shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
         return shared.getBoolean("darkMode", false);
     }
-
-
-
 }

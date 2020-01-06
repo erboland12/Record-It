@@ -34,42 +34,38 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.Context.MODE_PRIVATE;
 
+//Adapter to handle RV for comments
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHolder> {
-
-
+    //Front end variables
     private TextView comsDn, comsPost, comsUp, comsVotes, comsDown;
     private View comment_view;
     private ImageView replyImageView;
 
+    //Shared preferences, database, and auth variables
     private SharedPreferences shared;
     private SharedPreferences censorSP;
-    private FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
-    public static int rvPosition;
-    public static String commentSelection = " ";
-    public static boolean isDark;
+    //Miscellaneous variables
+    private static boolean isDark;
     private boolean isCensored;
-
     private InputMethodManager imm;
-
-    public static int commentCount;
-
+    private static int commentCount;
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-
-
-        public CircleImageView photoImageView;
-        public TextView dnTextView;
-        public TextView commentTextView;
-        public TextView upArrowTextView;
-        public TextView votesTextView;
-        public TextView downArrowTextView;
-        public TextView dateTextView;
+        //Recycler view front end variables
+        private CircleImageView photoImageView;
+        private TextView dnTextView;
+        private TextView commentTextView;
+        private TextView upArrowTextView;
+        private TextView votesTextView;
+        private TextView downArrowTextView;
+        private TextView dateTextView;
 
         @SuppressLint("ResourceType")
-        public ViewHolder(View itemView){
+        private ViewHolder(View itemView){
             super(itemView);
+            //Initializes view holder front end variables
             photoImageView = itemView.findViewById(R.id.comment_photo);
             replyImageView = itemView.findViewById(R.id.comment_reply_photo);
             dnTextView = itemView.findViewById(R.id.comment_display_name);
@@ -78,41 +74,34 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             votesTextView = itemView.findViewById(R.id.comment_votes);
             downArrowTextView = itemView.findViewById(R.id.comment_down_arrow);
             comment_view = itemView.findViewById(R.id.comment_view);
-
-            comsDown = itemView.findViewById(R.id.comment_down_arrow);
-            comsUp = itemView.findViewById(R.id.comment_up_arrow);
-            comsDn = itemView.findViewById(R.id.comment_display_name);
-            comsVotes = itemView.findViewById(R.id.comment_votes);
-            comsPost = itemView.findViewById(R.id.comment_post);
             dateTextView = itemView.findViewById(R.id.comment_date);
 
+            //Input managed for opening soft keyboard on button press
             imm = (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
-            db = FirebaseFirestore.getInstance();
+            //Initializes auth
             mAuth = FirebaseAuth.getInstance();
 
+            //Gets shared preferences
             shared = itemView.getContext().getSharedPreferences("liked", MODE_PRIVATE);
             censorSP = itemView.getContext().getSharedPreferences("censorPrefs", MODE_PRIVATE);
 
-            comsDown.setTextColor(itemView.getResources().getColor(R.color.red));
-            comsUp.setTextColor(itemView.getResources().getColor(R.color.colorGreenBack));
-
-
             if(returnDark()){
-                comsDn.setTextColor(itemView.getResources().getColor(R.color.colorWhite));
-                comsPost.setTextColor(itemView.getResources().getColor(R.color.colorWhite));
-                comsVotes.setTextColor(itemView.getResources().getColor(R.color.colorWhite));
+                dnTextView.setTextColor(itemView.getResources().getColor(R.color.colorWhite));
+                commentTextView.setTextColor(itemView.getResources().getColor(R.color.colorWhite));
+                votesTextView.setTextColor(itemView.getResources().getColor(R.color.colorWhite));
                 dateTextView.setTextColor(itemView.getResources().getColor(R.color.hintDarkModeColor));
                 replyImageView.setColorFilter(itemView.getResources().getColor(R.color.hintDarkModeColor), PorterDuff.Mode.SRC_ATOP);
             }
-
         }
+        //Determines if night mode preference is enabled
         public boolean returnDark(){
             shared = itemView.getContext().getSharedPreferences("DarkMode", MODE_PRIVATE);
             isDark = shared.getBoolean("darkMode", false);
             return isDark;
         }
 
+        //Determines if censorship is disabled
         private boolean returnCensor(){
             isCensored = censorSP.getBoolean("censorOff", false);
             return isCensored;
@@ -148,8 +137,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         final Comment com = mComments.get(position);
         Censor censor = new Censor();
 
-        rvPosition = position;
-
         // Set item views based on your views and data model
         CircleImageView imageView = viewHolder.photoImageView;
         if(imageView != null){
@@ -175,33 +162,41 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         final TextView dateText = viewHolder.dateTextView;
         dateText.setText(" - " + com.getmTimestamp());
 
+        //Disables top view
         if(position == 0){
             comment_view.setVisibility(View.INVISIBLE);
         }
 
+        //Hides reply icon for all comments from current user
         if(mAuth.getCurrentUser() != null){
             if(com.getmDisplayName().equals(mAuth.getCurrentUser().getDisplayName())){
                 replyImageView.setVisibility(View.INVISIBLE);
             }
         }
 
+        //Button listener for replying to a comment
         replyImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(mAuth.getCurrentUser() != null){
                     if(!com.getmDisplayName().equals(mAuth.getCurrentUser().getDisplayName())){
+                        //Gets user's  display name
                         RecordPageFragment.commentBox.setText("@" + com.getmDisplayName());
+
+                        //Opens soft keyboard on button click
                         RecordPageFragment.commentBox.requestFocus();
                         RecordPageFragment.commentBox.setSelection(com.getmDisplayName().length() + 1);
                         RecordPageFragment.commentBox.setShowSoftInputOnFocus(true);
                         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
                     }
                 }else{
+                    //Prevents anonymous users from commenting
                     Toast.makeText(v.getContext(), "You Must be Logged In to Comment.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
+        //Button listener that opens profile page
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -211,84 +206,84 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         });
 
 
-        comsUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                shared = v.getContext().getSharedPreferences("liked", MODE_PRIVATE);
-                final SharedPreferences.Editor editor = v.getContext().getSharedPreferences("liked", MODE_PRIVATE).edit();
-                db.collection("comments").whereEqualTo("mCommentId", com.getmCommentId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for(QueryDocumentSnapshot snap: task.getResult()){
-                           if(!shared.getBoolean(snap.getString("mCommentId") + snap.get("mUserId") + "liked", false)){
-                               int votes = snap.getLong("mVotes").intValue();
-                               votes += 1;
-                               Toast.makeText(v.getContext(), "Comment Upvoted", Toast.LENGTH_SHORT).show();
-                               db.collection("comments").document(snap.getId()).update("mVotes", votes);
-
-                               editor.putBoolean(snap.getString("mCommentId") + snap.get("mUserId") + "liked", true);
-                               editor.putBoolean(snap.getString("mCommentId") + snap.get("mUserId") + "disliked", false);
-
-                               if(RecordPageFragment.sortCommentsBy.getSelectedItem().toString().equals("Recently Added")){
-                                   commentSelection = "mTimestamp";
-                                   RecordPageFragment.selection = "mTimestamp";
-                               }else if (RecordPageFragment.sortCommentsBy.getSelectedItem().toString().equals("Highest Rated")){
-                                   commentSelection = "mVotes";
-                                   RecordPageFragment.selection = "mVotes";
-                               }
-
-                            }else{
-                               Toast.makeText(v.getContext(), "You Have Already Liked This Comment", Toast.LENGTH_SHORT).show();
-                           }
-                        }
-
-                        editor.apply();
-                        editor.commit();
-
-                        RecordPageFragment.rvComments.scrollToPosition(rvPosition);
-
-                    }
-                });
-            }
-        });
-
-        comsDown.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                shared = v.getContext().getSharedPreferences("liked", MODE_PRIVATE);
-                final SharedPreferences.Editor editor = v.getContext().getSharedPreferences("liked", MODE_PRIVATE).edit();
-                db.collection("comments").whereEqualTo("mCommentId", com.getmCommentId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for(QueryDocumentSnapshot snap: task.getResult()){
-                            if(!shared.getBoolean(snap.getString("mCommentId") + snap.get("mUserId") + "disliked", false)){
-                                int votes = snap.getLong("mVotes").intValue();
-                                votes -= 1;
-                                Toast.makeText(v.getContext(), "Comment Downvoted.", Toast.LENGTH_SHORT).show();
-                                db.collection("comments").document(snap.getId()).update("mVotes", votes);
-
-                                editor.putBoolean(snap.getString("mCommentId") + snap.get("mUserId") + "liked", false);
-                                editor.putBoolean(snap.getString("mCommentId") + snap.get("mUserId") + "disliked", true);
-                                RecordPageFragment.rvComments.scrollToPosition(position - 1);
-
-                                if(RecordPageFragment.sortCommentsBy.getSelectedItem().toString().equals("Recently Added")){
-                                    commentSelection = "mTimestamp";
-                                }else if (RecordPageFragment.sortCommentsBy.getSelectedItem().toString().equals("Highest Rated")){
-                                    commentSelection = "mVotes";
-                                }
-
-                            }else{
-                                Toast.makeText(v.getContext(), "You Have Already Disliked This Comment.", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        editor.apply();
-                        editor.commit();
-                        RecordPageFragment.rvComments.scrollToPosition(rvPosition);
-
-                    }
-                });
-            }
-        });
+//        comsUp.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(final View v) {
+//                shared = v.getContext().getSharedPreferences("liked", MODE_PRIVATE);
+//                final SharedPreferences.Editor editor = v.getContext().getSharedPreferences("liked", MODE_PRIVATE).edit();
+//                db.collection("comments").whereEqualTo("mCommentId", com.getmCommentId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        for(QueryDocumentSnapshot snap: task.getResult()){
+//                           if(!shared.getBoolean(snap.getString("mCommentId") + snap.get("mUserId") + "liked", false)){
+//                               int votes = snap.getLong("mVotes").intValue();
+//                               votes += 1;
+//                               Toast.makeText(v.getContext(), "Comment Upvoted", Toast.LENGTH_SHORT).show();
+//                               db.collection("comments").document(snap.getId()).update("mVotes", votes);
+//
+//                               editor.putBoolean(snap.getString("mCommentId") + snap.get("mUserId") + "liked", true);
+//                               editor.putBoolean(snap.getString("mCommentId") + snap.get("mUserId") + "disliked", false);
+//
+//                               if(RecordPageFragment.sortCommentsBy.getSelectedItem().toString().equals("Recently Added")){
+//                                   commentSelection = "mTimestamp";
+//                                   RecordPageFragment.selection = "mTimestamp";
+//                               }else if (RecordPageFragment.sortCommentsBy.getSelectedItem().toString().equals("Highest Rated")){
+//                                   commentSelection = "mVotes";
+//                                   RecordPageFragment.selection = "mVotes";
+//                               }
+//
+//                            }else{
+//                               Toast.makeText(v.getContext(), "You Have Already Liked This Comment", Toast.LENGTH_SHORT).show();
+//                           }
+//                        }
+//
+//                        editor.apply();
+//                        editor.commit();
+//
+//                        RecordPageFragment.rvComments.scrollToPosition(rvPosition);
+//
+//                    }
+//                });
+//            }
+//        });
+//
+//        comsDown.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(final View v) {
+//                shared = v.getContext().getSharedPreferences("liked", MODE_PRIVATE);
+//                final SharedPreferences.Editor editor = v.getContext().getSharedPreferences("liked", MODE_PRIVATE).edit();
+//                db.collection("comments").whereEqualTo("mCommentId", com.getmCommentId()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        for(QueryDocumentSnapshot snap: task.getResult()){
+//                            if(!shared.getBoolean(snap.getString("mCommentId") + snap.get("mUserId") + "disliked", false)){
+//                                int votes = snap.getLong("mVotes").intValue();
+//                                votes -= 1;
+//                                Toast.makeText(v.getContext(), "Comment Downvoted.", Toast.LENGTH_SHORT).show();
+//                                db.collection("comments").document(snap.getId()).update("mVotes", votes);
+//
+//                                editor.putBoolean(snap.getString("mCommentId") + snap.get("mUserId") + "liked", false);
+//                                editor.putBoolean(snap.getString("mCommentId") + snap.get("mUserId") + "disliked", true);
+//                                RecordPageFragment.rvComments.scrollToPosition(position - 1);
+//
+//                                if(RecordPageFragment.sortCommentsBy.getSelectedItem().toString().equals("Recently Added")){
+//                                    commentSelection = "mTimestamp";
+//                                }else if (RecordPageFragment.sortCommentsBy.getSelectedItem().toString().equals("Highest Rated")){
+//                                    commentSelection = "mVotes";
+//                                }
+//
+//                            }else{
+//                                Toast.makeText(v.getContext(), "You Have Already Disliked This Comment.", Toast.LENGTH_SHORT).show();
+//                            }
+//                        }
+//                        editor.apply();
+//                        editor.commit();
+//                        RecordPageFragment.rvComments.scrollToPosition(rvPosition);
+//
+//                    }
+//                });
+//            }
+//        });
 
     }
 

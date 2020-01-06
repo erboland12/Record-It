@@ -10,6 +10,7 @@
     <color name="colorWhite">#F8F8FF</color>
     <color name="darkModeBack">#212121</color>
     <color name="darkModeRealBack">#303030</color>
+    <color name="rvDarkModeViewColor">#55000000</color>
     <color name="colorButton">#B19CD9</color>
     <color name="colorGreenBack">#9932cd32</color>
     <color name="colorGreenClick">#32cd32</color>

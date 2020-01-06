@@ -49,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Log In");
+        //Sets night theme based on preference
         if (returnDark()) {
             setTheme(R.style.darkTheme);
         }
@@ -62,20 +63,25 @@ public class LoginActivity extends AppCompatActivity {
         mLoginLayout = findViewById(R.id.loginLayout);
         btn = findViewById(R.id.logged);
 
+        //Instantiates database and auth variables
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
+        //Button Listener for logging in
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+                //Checks for no empty fields or invalid inputs
                 if (verifyCredentials(mLogin.getText().toString(), mPass.getText().toString())) {
                     String email = mLogin.getText().toString();
                     String password = mPass.getText().toString();
 
+                    //Signs out current user so new one can log in
                     if(mAuth.getCurrentUser() != null){
                         mAuth.signOut();
                     }
 
+                    //Auth sign in call
                     mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult authResult) {
@@ -84,6 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
 
+                    //Failure listener if log in doesn't succeed.
                     mAuth.signInWithEmailAndPassword(email, password).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
@@ -96,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
+        //Button call to link user to sign up page
         mSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,6 +111,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        //Button call to open forgot pw dialog
         mForgotPw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,6 +119,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        //Additional style changes if dark mode preference is on
         if (returnDark()) {
             mLoginLayout.setBackgroundColor(getResources().getColor(R.color.darkModeBack));
             mSignUp.setTextColor(getResources().getColor(R.color.signUpLinkDarkMode));
@@ -119,11 +129,13 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    //Checks for dark mode preference
     private boolean returnDark() {
         shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
         return shared.getBoolean("darkMode", false);
     }
 
+    //Method that checks for invlaid credential inputs.
     private boolean verifyCredentials(String email, String password) {
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "One of the Fields is Empty.  Try Again.", Toast.LENGTH_LONG).show();
@@ -136,6 +148,7 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
+    //Creates dialog and checks for valid user when password reset request is made
     private void checkForValidUser(){
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -198,6 +211,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    //Miscellaneous Methods
     @Override
     public void onStart() {
         super.onStart();

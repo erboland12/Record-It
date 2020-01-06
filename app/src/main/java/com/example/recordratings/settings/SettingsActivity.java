@@ -34,8 +34,8 @@ public class SettingsActivity extends AppCompatActivity {
         setTitle("Settings");
         setContentView(R.layout.activity_settings);
 
+        //Creates and launches Preferences Fragment
         frag = new MyPreferencesFragment();
-
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.settings_layout, frag)
@@ -47,11 +47,13 @@ public class SettingsActivity extends AppCompatActivity {
         return contextOfApplication;
     }
 
+    //Determines if night mode preference is enabled
     private boolean returnDark(){
         shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
         return shared.getBoolean("darkMode", false);
     }
 
+    //Returns to home page on back press
     @Override
     public void onBackPressed(){
         startActivity(new Intent(SettingsActivity.this, MainActivity.class));

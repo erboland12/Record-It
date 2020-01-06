@@ -68,11 +68,12 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
 public class ProfileActivity extends AppCompatActivity {
 
+    //Miscellaneous
     public static String uid;
     private int PICK_IMAGE_REQUEST = 1;
     private String photoToString = "";
 
-    private LinearLayout header, bottom;
+    private LinearLayout bottom;
     private CircleImageView pic, editPic;
     private Button btnApply, btnCancel, btnChangePic;
     private TextView dn, bio, recordCount;
@@ -97,11 +98,12 @@ public class ProfileActivity extends AppCompatActivity {
 
         setTitle("");
 
+        //Initializes databases, auth, and storage variables
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
-        header = findViewById(R.id.profile_header);
+        //Initializes front-end variables
         bottom = findViewById(R.id.profile_bottom);
         pic = findViewById(R.id.profile_page_picture);
         dn = findViewById(R.id.profile_page_dn);
@@ -116,26 +118,23 @@ public class ProfileActivity extends AppCompatActivity {
         }
         rvRecords.setAdapter(adapter);
 
+        //Sets up shared preferences for censor preferences
         censorSP = getSharedPreferences("censorPrefs", MODE_PRIVATE);
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setMessage(R.string.dialog_message)
-                .setTitle(R.string.dialog_title);
 
         //Calls toolbar xml file
         Toolbar toolbar = findViewById(R.id.profile_toolbar);
         setSupportActionBar(toolbar);
 
+        //Additional styling changes if night mode preference is on
         if(returnDark()){
             bottom.setBackgroundColor(getResources().getColor(R.color.darkModeBack));
             rvRecords.setBackground(getResources().getDrawable(R.drawable.rv_dark_border));
-
         }
+
         //Gets all of the user's records from db
         readFromDatabase();
 
+        //Database query to set up profile picture, display name, bio, and record count
         db.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -179,17 +178,19 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
-
+    //Determines if night mode preference is on
     private boolean returnDark(){
         shared = getSharedPreferences("DarkMode", MODE_PRIVATE);
         return shared.getBoolean("darkMode", false);
     }
 
+    //Determines if censorship is disabled
     private boolean returnCensor(){
         isCensored = censorSP.getBoolean("censorOff", false);
         return isCensored;
     }
 
+    //Database query that loads in all records for a specific user
     public void readFromDatabase(){
         db = FirebaseFirestore.getInstance();
         records = new ArrayList<>();
@@ -223,6 +224,7 @@ public class ProfileActivity extends AppCompatActivity {
         records = new ArrayList<>();
     }
 
+    //Handles menu icons and actions
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -250,6 +252,7 @@ public class ProfileActivity extends AppCompatActivity {
         return true;
     }
 
+    //Handles actions for selected menu icon
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -262,24 +265,17 @@ public class ProfileActivity extends AppCompatActivity {
             openDialog();
             return true;
         }
-
-
-
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onStart(){
-        super.onStart();
-    }
-
-
+    //Opens dialog for customization of profile
     public void openDialog(){
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.edit_custom_dialog, null);
         dialogBuilder.setView(dialogView);
 
+        //Initializes front end variables for dialog
         editBio = dialogView.findViewById(R.id.edit_bio);
         editPic = dialogView.findViewById(R.id.edit_change_pic);
         btnApply = dialogView.findViewById(R.id.edit_apply);
@@ -289,6 +285,8 @@ public class ProfileActivity extends AppCompatActivity {
         if(returnDark()){
             editBio.setHintTextColor(getResources().getColor(R.color.hintDarkModeColor));
         }
+
+        //Loads current user's photo into image view
         db.collection("users").whereEqualTo("mId", mAuth.getCurrentUser().getUid()).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
@@ -299,9 +297,11 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        //Creates instance of alert dialog
         final AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
 
+        //Button listener for choosing new profile image
         btnChangePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -364,6 +364,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
+    //Sets up intent for choosing image from gallery
     public void chooseImage(){
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -371,6 +372,7 @@ public class ProfileActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
+    //Handles action of choosing image.  Loads image into image on successful pick
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -410,12 +412,14 @@ public class ProfileActivity extends AppCompatActivity {
         this.finish();
     }
 
+    //Item touch helper for recycler view swipe action
     ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
             return false;
         }
 
+        //Creates alert dialog on left swipe that prompts user for record deletion
         @Override
         public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int direction) {
             final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(viewHolder.itemView.getContext());
@@ -462,6 +466,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         }
 
+        //Handles front-end swipe box
         @Override
         public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
             new RecyclerViewSwipeDecorator.Builder(ProfileActivity.this, c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)

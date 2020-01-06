@@ -3,18 +3,14 @@ package com.example.recordratings.misc;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+//Class designed for censoring strings that include expletives.
 public class Censor {
 
     public Censor(){
-
     }
 
     public String censorText(String text){
-//        return text.replaceAll(setUpBuilder("fuck", "shit", "ass", "bitch"), "*");
-
-
-        String result = text;
-        String finalResult = result;
+        String finalResult = text;
         if(finalResult.toLowerCase().contains("fuck") ||
            finalResult.toLowerCase().contains(" ass ") ||
            finalResult.toLowerCase().contains("ass ") ||
@@ -55,7 +51,10 @@ public class Censor {
            finalResult.toLowerCase().equals("hoe")){
             finalResult = text
                     .replaceAll("\\W*((?i)fuck(?-i))\\W*", " **** ")
+                    .replaceAll("\\W*((?i)fuckin(?-i))\\W*", " ****** ")
+                    .replaceAll("\\W*((?i)fucking(?-i))\\W*", " ******* ")
                     .replaceAll("\\W*((?i)ass(?-i))\\W*", " *** ")
+                    .replaceAll("\\W*((?i)asshole(?-i))\\W*", " ******* ")
                     .replaceAll("\\W*((?i)bitch(?-i))\\W*", " ***** ")
                     .replaceAll("\\W*((?i)fag(?-i))\\W*", " *** ")
                     .replaceAll("\\W*((?i)shit(?-i))\\W*", " **** ")
@@ -83,14 +82,4 @@ public class Censor {
         }
         return finalResult;
     }
-
-//    private String setUpBuilder(String... text){
-//        String re = "";
-//        for (String w : text)
-//            for (int i = 0; i < w.length(); i++)
-//                re += String.format("|((?<=%s)%s(?=%s))",
-//                        w.substring(0, i).toLowerCase(), w.charAt(i), w.substring(i + 1).toLowerCase());
-//        return re.substring(1).toLowerCase();
-//    }
-
 }

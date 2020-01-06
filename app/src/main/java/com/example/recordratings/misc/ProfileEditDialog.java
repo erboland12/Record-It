@@ -27,6 +27,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.Context.MODE_PRIVATE;
 
+//Creates dialog for editing profile.  Consider replacing...
 public class ProfileEditDialog extends AppCompatDialogFragment {
     private EditText editBio;
     private CircleImageView editPic;
@@ -47,29 +48,7 @@ public class ProfileEditDialog extends AppCompatDialogFragment {
 
 
         AlertDialog alertDialog = builder.create();
-
-//        editBio = (EditText) alertDialog.findViewById(R.id.edit_bio);
-//        editPic = (CircleImageView) alertDialog.findViewById(R.id.edit_change_pic);
-//
-//        if(returnDark()){
-//            editBio.setHintTextColor(getResources().getColor(R.color.hintDarkModeColor));
-//        }
-//
-//        db.collection("users").whereEqualTo("mId", mAuth.getCurrentUser().getUid()).addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
-//                for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
-//                    Uri uri = Uri.parse(doc.getString("mPhotoUrl"));
-//                    Picasso.get().load(uri).into(editPic);
-//                }
-//            }
-//        });
-
         return alertDialog;
     }
 
-    private boolean returnDark(){
-        shared = getActivity().getSharedPreferences("DarkMode", MODE_PRIVATE);
-        return shared.getBoolean("darkMode", false);
-    }
 }
