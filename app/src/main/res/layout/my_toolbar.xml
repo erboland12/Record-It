@@ -17,13 +17,13 @@
             android:id="@+id/action_search"
             android:layout_width="190dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentEnd="true" />
 
         <TextView
             android:layout_width="159dp"
             android:layout_height="46dp"
-            android:text="My Records"
-            android:textSize="25dp" />
+            android:text="@string/my_records"
+            android:textSize="25sp" />
 
     </RelativeLayout>
 

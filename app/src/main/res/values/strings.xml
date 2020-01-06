@@ -2,6 +2,7 @@
     <string name="app_name">Record Ratings</string>
     <string name="main_add_button">Rate a Record</string>
     <string name="add_record">Rate This Record</string>
+    <string name="add_rec">Add Record</string>
     <string name="submit_edit">Submit Edit</string>
     <string name="main_delete_button">Delete</string>
     <string name="edit">Edit</string>
@@ -47,6 +48,17 @@
     <string name="report_spinner_head">Select a Reason why you are Reporting this Account: </string>
     <string name="report_user">Enter Display Name Here...</string>
     <string name="report_submit">Report User</string>
+    <string name="feedback">Send us Feedback!</string>
+    <string name="feedback_long">What do you like about this app?  What needs to be implemented or improved?  Let us know down below!"</string>
+    <string name="my_records">My Records</string>
+    <string name="thanks">Thank you for downloading Record It!</string>
+    <string name="enjoy">Enjoy the App?  Give us a 5-star rating in the play store!</string>
+    <string name="rate">Rate the App</string>
+    <string name="user">User</string>
+    <string name="admin_del">admin_del_record</string>
+    <string name="my_profile">My Profile</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="close_app">Close App</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

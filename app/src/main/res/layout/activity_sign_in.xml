@@ -90,8 +90,6 @@
             android:layout_marginTop="10pt"
             android:background="?attr/buttoncolor"
             android:text="@string/submit" />
-
-
     </LinearLayout>
 
 

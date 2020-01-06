@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/feedback_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -16,7 +14,7 @@
         android:layout_marginTop="15pt"
         android:gravity="center"
         android:textColor="?attr/textcolor"
-        android:text="Send us Feedback!"
+        android:text="@string/feedback"
         android:textSize="24sp" />
 
     <TextView
@@ -27,7 +25,7 @@
         android:layout_marginTop="10pt"
         android:gravity="center"
         android:textColor="?attr/textcolor"
-        android:text="What do you like about this app?  What needs to be implemented or improved?  Let us know down below!"
+        android:text="@string/feedback_long"
         android:textSize="18sp" />
 
     <EditText
@@ -35,7 +33,7 @@
         android:inputType="textMultiLine"
         android:lines="8"
         android:minLines="6"
-        android:gravity="top|left"
+        android:gravity="top|start"
         android:maxLines="10"
         android:padding="5dp"
         android:layout_width="match_parent"

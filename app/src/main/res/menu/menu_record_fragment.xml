@@ -7,15 +7,15 @@
 
     <item
         android:id="@+id/action_admin_del_record"
-        android:title="admin_del_record"
+        android:title="@string/admin_del"
         android:icon="@drawable/ic_delete_black_24dp"
         android:visible="false"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_home"
         android:orderInCategory="300"
-        android:title="User"
+        android:title="@string/user"
         android:icon="@drawable/home"
-        app:showAsAction="ifRoom"></item>
+        app:showAsAction="ifRoom"/>
 
 </menu>
