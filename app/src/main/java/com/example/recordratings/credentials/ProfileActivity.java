@@ -115,8 +115,10 @@ public class ProfileActivity extends AppCompatActivity {
         //Initializes RV w/ adapter
         rvRecords = findViewById(R.id.rvProfileRecords);
         adapter = new RecordsAdapter(records);
-        if(uid.equals(mAuth.getCurrentUser().getUid())){
-            new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rvRecords);
+        if(mAuth.getCurrentUser() != null){
+            if(mAuth.getCurrentUser().getUid().equals(uid)){
+                new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rvRecords);
+            }
         }
         rvRecords.setAdapter(adapter);
 
@@ -154,10 +156,12 @@ public class ProfileActivity extends AppCompatActivity {
                             recordCount.setText(doc.getString("mDisplayName") + "'s Total Records: " + Integer.toString(adapter.getItemCount()));
                         }
 
-                        if(mAuth.getCurrentUser().getUid().equals(uid) && adapter.getItemCount() < 1){
-                            recordCount.setText("You have not posted any records.");
-                        }else if(mAuth.getCurrentUser().getUid().equals(uid) && adapter.getItemCount() >= 1){
-                            recordCount.setText("Your Total Records: " + Integer.toString(adapter.getItemCount()));
+                        if(mAuth.getCurrentUser() != null){
+                            if(mAuth.getCurrentUser().getUid().equals(uid) && adapter.getItemCount() < 1){
+                                recordCount.setText("You have not posted any records.");
+                            }else if(mAuth.getCurrentUser().getUid().equals(uid) && adapter.getItemCount() >= 1){
+                                recordCount.setText("Your Total Records: " + Integer.toString(adapter.getItemCount()));
+                            }
                         }
 
                         if(doc.getString("bio").equals("Empty")){
@@ -209,9 +213,13 @@ public class ProfileActivity extends AppCompatActivity {
                     String genre = document.getString("genre");
                     String desc = document.getString("desc");
                     String recId = document.getString("recId");
+                    String dn = "Null";
+                    if(document.getString("displayName") != null){
+                         dn = document.getString("displayName");
+                    }
                     long date = (long) document.get("datePostedUnix");
                     if(id.equals(uid)){
-                        records.add(new Records(id, album, artist, rating, photo, genre, desc, recId, date));
+                        records.add(new Records(id, album, artist, rating, photo, genre, desc, recId, date, dn));
                         i++;
                     }
                 }
@@ -235,7 +243,10 @@ public class ProfileActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_profile, menu);
         if(returnDark()){
             for(int i = 0; i < menu.size(); i++){
-                if(!mAuth.getCurrentUser().getUid().equals(uid)){
+                if(mAuth.getCurrentUser() == null){
+                    menu.getItem(i).setVisible(false);
+                }
+                else if(!mAuth.getCurrentUser().getUid().equals(uid)){
                     menu.getItem(i).setVisible(false);
                 }
                 Drawable drawable = menu.getItem(i).getIcon();
@@ -334,7 +345,11 @@ public class ProfileActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for(final QueryDocumentSnapshot doc: task.getResult()){
                             Map<String, Object> map = new HashMap<>();
-                            map.put("bio", '"' + editBio.getText().toString() + '"');
+                            if(editBio.getText().toString().isEmpty()){
+                                map.put("bio", '"' + "This Mysterious User Has Nothing To Say..." + '"');
+                            }else{
+                                map.put("bio", '"' + editBio.getText().toString() + '"');
+                            }
                             db.collection("users").document(doc.getId()).update(map)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
@@ -404,8 +419,6 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
             }
 
-        }else {
-            Toast.makeText(this, "No Image has been Selected.",Toast.LENGTH_LONG).show();
         }
     }
 

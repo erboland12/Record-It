@@ -72,6 +72,7 @@ import org.w3c.dom.Text;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -365,12 +366,13 @@ public class RecordPageFragment extends Fragment {
                     //Creates date format to record timestamp
                     DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                     Date date = new Date();
+                    long timestamp = Instant.now().getEpochSecond();
 
                     //Generates unique comment id
                     commentId = mAuth.getUid()  + Integer.toString(randomNum1) + mAuth.getCurrentUser().getDisplayName() + Integer.toString(randomNum2);
 
                     //Database call to add new comment
-                    db.collection("comments").add(new Comment(displayName, contents, df.format(date), userId, recId, commentId, photoString, 0)).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    db.collection("comments").add(new Comment(displayName, contents, df.format(date), userId, recId, commentId, photoString, 0, timestamp)).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
                             Toast.makeText(getContext(), "Comment Added.", Toast.LENGTH_SHORT).show();
@@ -532,7 +534,7 @@ public class RecordPageFragment extends Fragment {
         });
 
         //DB call to add new comment
-        db.collection("comments").orderBy("mTimestamp", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        db.collection("comments").orderBy("unixTime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 for(DocumentSnapshot doc: queryDocumentSnapshots){
@@ -544,7 +546,8 @@ public class RecordPageFragment extends Fragment {
                                 doc.getString("mRecordId"),
                                 doc.getString("mCommentId"),
                                 doc.getString("photoString"),
-                                doc.getLong("mVotes").intValue());
+                                doc.getLong("mVotes").intValue(),
+                                doc.getLong("unixTime"));
 
                         comments.add(newComment);
                         tempComments.add(newComment);

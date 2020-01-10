@@ -348,17 +348,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         db.collection("records").orderBy("datePostedUnix", DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                for (DocumentSnapshot document : queryDocumentSnapshots) {
-                    String id = document.get("id").toString();
-                    String album = document.getString("title");
-                    String artist = document.getString("artist");
-                    Double rating = document.getDouble("rating");
-                    String photo = document.getString("mPhotoString");
-                    String genre = document.getString("genre");
-                    String desc = document.getString("desc");
-                    String recId = document.getString("recId");
-                    long date = (long) document.get("datePostedUnix");
-                    records.add(new Records(id, album, artist, rating, photo, genre, desc, recId, date));
+                if (e!=null){
+                    return;
+                }else{
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        String id = document.get("id").toString();
+                        String album = document.getString("title");
+                        String artist = document.getString("artist");
+                        Double rating = document.getDouble("rating");
+                        String photo = document.getString("mPhotoString");
+                        String genre = document.getString("genre");
+                        String desc = document.getString("desc");
+                        String recId = document.getString("recId");
+                        long date = (long) document.get("datePostedUnix");
+                        String dn = "Null";
+                        if(document.getString("displayName") != null){
+                            dn = document.getString("displayName");
+                        }
+                        records.add(new Records(id, album, artist, rating, photo, genre, desc, recId, date, dn));
+                    }
                 }
                 adapter = new RecordsAdapter(records);
                 rvRecords.setAdapter(adapter);

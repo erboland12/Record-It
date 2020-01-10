@@ -49,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Log In");
+
         //Sets night theme based on preference
         if (returnDark()) {
             setTheme(R.style.darkTheme);
@@ -73,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(final View v) {
                 //Checks for no empty fields or invalid inputs
                 if (verifyCredentials(mLogin.getText().toString(), mPass.getText().toString())) {
-                    String email = mLogin.getText().toString();
+                    String email = mLogin.getText().toString().trim();
                     String password = mPass.getText().toString();
 
                     //Signs out current user so new one can log in
@@ -81,11 +82,13 @@ public class LoginActivity extends AppCompatActivity {
                         mAuth.signOut();
                     }
 
+                    Toast.makeText(v.getContext(), "Loading...", Toast.LENGTH_SHORT).show();
+
                     //Auth sign in call
                     mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult authResult) {
-                            Toast.makeText(v.getContext(), "Login Successful", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(v.getContext(), "Login Successful.", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(v.getContext(), MainActivity.class));
                         }
                     });
@@ -94,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                     mAuth.signInWithEmailAndPassword(email, password).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(v.getContext(), "Login Failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(v.getContext(), "Login Failed.  Check Your Email and Password and Try Again.", Toast.LENGTH_LONG).show();
                         }
                     });
 

@@ -10,10 +10,11 @@ public class Records {
     private String mDescription;
     private String mRecId;
     private long mDatePostedUnix;
+    private String mDisplayName;
 
 
     public Records(String id, String title, String artist, double rating, String photo, String genre,
-                   String description, String recId, long datePostedUnix) {
+                   String description, String recId, long datePostedUnix, String displayName) {
         mId = id;
         mTitle = title;
         mArtist = artist;
@@ -23,6 +24,7 @@ public class Records {
         mDescription = description;
         mRecId = recId;
         mDatePostedUnix = datePostedUnix;
+        mDisplayName = displayName;
     }
 
     public String getId() { return mId; }
@@ -52,5 +54,7 @@ public class Records {
     public String getRecId(){ return mRecId; }
 
     public long getDatePostedUnix(){ return mDatePostedUnix; }
+
+    public String getDisplayName(){ return mDisplayName; }
 
 }

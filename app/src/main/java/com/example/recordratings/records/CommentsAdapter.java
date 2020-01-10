@@ -23,12 +23,16 @@ import com.example.recordratings.misc.Censor;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import javax.annotation.Nullable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -45,6 +49,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
     private SharedPreferences shared;
     private SharedPreferences censorSP;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
 
     //Miscellaneous variables
     private static boolean isDark;
@@ -79,7 +84,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
             //Input managed for opening soft keyboard on button press
             imm = (InputMethodManager) itemView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
-            //Initializes auth
+            //Initializes auth and db
+            db = FirebaseFirestore.getInstance();
             mAuth = FirebaseAuth.getInstance();
 
             //Gets shared preferences
@@ -138,10 +144,18 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         Censor censor = new Censor();
 
         // Set item views based on your views and data model
-        CircleImageView imageView = viewHolder.photoImageView;
+        final CircleImageView imageView = viewHolder.photoImageView;
         if(imageView != null){
-            Uri uri = Uri.parse(com.getPhotoString());
-            Picasso.get().load(uri).into(imageView);
+            db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                    for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
+                        if(doc.getString("mDisplayName").equals(com.getmDisplayName())){
+                            Picasso.get().load(Uri.parse(doc.getString("mPhotoUrl"))).into(imageView);
+                        }
+                    }
+                }
+            });
         }
 
         final TextView dn = viewHolder.dnTextView;
@@ -162,12 +176,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.ViewHo
         final TextView dateText = viewHolder.dateTextView;
         dateText.setText(" - " + com.getmTimestamp());
 
-        //Disables top view
-//        if(position == 0){
-//            comment_view.setVisibility(View.INVISIBLE);
-//        } else{
-//            comment_view.setVisibility(View.VISIBLE);
-//        }
 
         //Hides reply icon for all comments from current user
         if(mAuth.getCurrentUser() != null){

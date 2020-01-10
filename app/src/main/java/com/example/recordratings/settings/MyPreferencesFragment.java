@@ -150,6 +150,7 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
             }
         });
 
+        shared = getActivity().getSharedPreferences("DarkMode", Context.MODE_PRIVATE);
         censorSP = getActivity().getSharedPreferences("censorPrefs", Context.MODE_PRIVATE);
 
         darkMode = findPreference("darkMode");
@@ -173,8 +174,8 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
                     editor.apply();
                     editor.commit();
                 }
-                getActivity().finish();
-                startActivity(new Intent(SettingsActivity.getContextOfApplication(), SettingsActivity.class));
+//                getActivity().finish();
+//                startActivity(new Intent(SettingsActivity.getContextOfApplication(), SettingsActivity.class));
                 return true;
             }
         });

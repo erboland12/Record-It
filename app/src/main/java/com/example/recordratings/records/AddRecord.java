@@ -215,17 +215,18 @@ public class AddRecord extends AppCompatActivity {
 
                     //Stores values from front end inputs to be put into record item
                     String id = mAuth.getUid();
-                    String album = albumName.getText().toString();
-                    String artist = artistName.getText().toString();
+                    String album = albumName.getText().toString().trim();
+                    String artist = artistName.getText().toString().trim();
                     double rating2 = rating.getRating();
                     String photo = photoToString;
                     String genre2 = genre.getSelectedItem().toString();
-                    String desc = description.getText().toString();
+                    String desc = description.getText().toString().trim();
                     String recId = id + Integer.toString(randomNum1) + album + Integer.toString(randomNum2);
                     long datePosted = Instant.now().getEpochSecond();
+                    String dn = mAuth.getCurrentUser().getDisplayName();
 
                     //Creates record item from stored inputs and creates new document in record collection
-                    Records newRecord = new Records(id, album, artist, rating2, photo, genre2, desc, recId, datePosted);
+                    Records newRecord = new Records(id, album, artist, rating2, photo, genre2, desc, recId, datePosted, dn);
                     db.collection("records").add(newRecord)
                             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override
@@ -273,8 +274,6 @@ public class AddRecord extends AppCompatActivity {
                 Toast.makeText(this, "Something Went Wrong.  Please Try Again.", Toast.LENGTH_LONG).show();
             }
 
-        }else {
-            Toast.makeText(this, "No Image Has Been Selected.",Toast.LENGTH_LONG).show();
         }
     }
 

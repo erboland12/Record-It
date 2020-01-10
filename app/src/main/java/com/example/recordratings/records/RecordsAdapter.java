@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;
@@ -39,7 +40,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -50,12 +53,13 @@ import static android.content.Context.MODE_PRIVATE;
 public class RecordsAdapter extends
     RecyclerView.Adapter<RecordsAdapter.ViewHolder> {
 
-    private SharedPreferences censorSP;
+    private SharedPreferences censorSP, shared;
     private boolean isCensored;
-
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        private TextView albumTextView, artistTextView;
+        private TextView albumTextView, artistTextView, userTextView;
         private ImageView photoImageView;
         private RatingBar ratingBar;
         public View view;
@@ -69,15 +73,33 @@ public class RecordsAdapter extends
             ratingBar = itemView.findViewById(R.id.rating);
             photoImageView = itemView.findViewById(R.id.photo);
             view = itemView.findViewById(R.id.record_item_view);
+            userTextView = itemView.findViewById(R.id.nameAndDate);
 
             //Call for censorship shared preference
             censorSP = itemView.getContext().getSharedPreferences("censorPrefs", MODE_PRIVATE);
+
+            //Sets up firebase and auth
+            db = FirebaseFirestore.getInstance();
+            mAuth = FirebaseAuth.getInstance();
         }
 
         //Determines if censor preference is disabled
         private boolean returnCensor(){
             isCensored = censorSP.getBoolean("censorOff", false);
             return isCensored;
+        }
+
+        //Determines if night mode preference is enabled
+        public boolean returnDark(){
+            shared = itemView.getContext().getSharedPreferences("DarkMode", MODE_PRIVATE);
+            return shared.getBoolean("darkMode", false);
+        }
+
+        //Converts unix time to date stamp
+        private String unixToDate(long unix){
+            Date date = new java.util.Date(unix*1000L);
+            SimpleDateFormat sdf = new java.text.SimpleDateFormat("MM-dd-yy");
+            return sdf.format(date);
         }
     }
 
@@ -136,10 +158,22 @@ public class RecordsAdapter extends
         final RatingBar rating = viewHolder.ratingBar;
         rating.setRating((float) (buf.getRating()));
 
-//        final View view = viewHolder.view;
-//        if(position == 0){
-//            view.setVisibility(View.INVISIBLE);
-//        }
+        final TextView textView3 = viewHolder.userTextView;
+        textView3.setTypeface(null, Typeface.ITALIC);
+        if(viewHolder.returnDark()){
+            textView3.setTextColor(viewHolder.itemView.getResources().getColor(R.color.hintDarkModeColor));
+        }
+        db.collection("records").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
+                    if(buf.getRecId().equals(doc.getString("recId"))){
+                        textView3.setText(doc.getString("displayName") + ", " + viewHolder.unixToDate(doc.getLong("datePostedUnix")));
+                    }
+                }
+            }
+        });
+
 
         //Item click listener for each entry in rv
         viewHolder.itemView.setOnClickListener(new View.OnClickListener(){

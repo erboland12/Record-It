@@ -42,6 +42,9 @@ import com.squareup.picasso.Picasso;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -63,7 +66,9 @@ public class SignInActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private StorageReference mStorageRef;
-    private boolean dnInUse = false;
+
+    //Boolean value to check for taken display name
+    private boolean taken = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +98,22 @@ public class SignInActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(final CharSequence s, int start, int before, int count) {
+                taken = false;
                 if(s.length() > 15){
                     Toast.makeText(getApplicationContext(), "Display Name Cannot Exceed 16 Characters", Toast.LENGTH_SHORT).show();
                 }
+
+                db.collection("users").whereEqualTo("mDisplayName", s.toString()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for(QueryDocumentSnapshot doc: task.getResult()){
+                            if(s.toString().equals(doc.getString("mDisplayName"))){
+                                taken = true;
+                            }
+                        }
+                    }
+                });
             }
 
             @Override
@@ -143,24 +160,10 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 //Stores values from edit texts as strings
-                final String email = mEmail.getText().toString();
-                final String displayName = mDisplay.getText().toString();
+                final String email = mEmail.getText().toString().trim();
+                final String displayName = mDisplay.getText().toString().trim();
                 String password = mPassword.getText().toString();
                 String confirm = mConfirmPassword.getText().toString();
-
-                //DB query to determine if display name is in use
-                db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
-                        for(QueryDocumentSnapshot doc: queryDocumentSnapshots){
-                            if(displayName.equals(doc.getString("mDisplayName"))){
-                                dnInUse = true;
-                                Toast.makeText(v.getContext(), "Display Name has Already been Taken.  Choose Another One.", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                        }
-                    }
-                });
 
                 //Determines valid input for edit texts
                 if(verifyCredentials(email, displayName, password, confirm)){
@@ -169,8 +172,9 @@ public class SignInActivity extends AppCompatActivity {
                         mAuth.signOut();
                     }
 
-                    if(dnInUse){
-                        dnInUse = false;
+                    //Checks to see if display name is in auth records
+                    if(taken){
+                        Toast.makeText(getApplicationContext(), "Display Name Already In Use.  Choose a New One.", Toast.LENGTH_SHORT).show();
                     }else{
                         //Calls auth method to create new user
                         mAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
@@ -217,8 +221,10 @@ public class SignInActivity extends AppCompatActivity {
                             }
                         });
                     }
+
                 }
             }
+
         });
 
         //Additional styling if night mode preference is on
@@ -239,26 +245,39 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     //Validates input to ensure clean fields
-    private boolean verifyCredentials(String email, String displayName, String password, String confirmPassword) {
+    private boolean verifyCredentials(String email, final String displayName, String password, String confirmPassword) {
         if (email.isEmpty() || displayName.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             Toast.makeText(this, "One of the Fields is Empty.  Try Again.", Toast.LENGTH_LONG).show();
             return false;
         }
+
         if (!email.contains("@") || (!email.contains("."))) {
             Toast.makeText(this, "Invalid Email Format.", Toast.LENGTH_LONG).show();
             return false;
         }
 
-        if(!confirmPassword.equals(password)){
-            Toast.makeText(this, "Passwords do not Match.", Toast.LENGTH_LONG).show();
-            return false;
-        }
         if(password.length() < 8){
-            Toast.makeText(this, "Passwords Must be 8 Digits Long.",
+            Toast.makeText(this, "Passwords Must be at Least 8 Digits Long.",
                            Toast.LENGTH_LONG).show();
             return false;
         }
+        else if(!confirmPassword.equals(password)){
+            Toast.makeText(this, "Passwords do not Match.", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
         return true;
+    }
+
+    private boolean checkDisplayNameAvailability(final String dn) throws InterruptedException {
+        //DB query to determine if display name is in use
+//        final CountDownLatch loginLatch = new CountDownLatch (1);
+
+        //Login latch that handles synchronous call
+//        loginLatch.await(5L, TimeUnit.SECONDS);
+
+        return taken;
+
     }
 
     //Opens gallery to choose profile picture
@@ -295,8 +314,6 @@ public class SignInActivity extends AppCompatActivity {
                 Toast.makeText(this, "Something Went Wrong.  Please Try Again", Toast.LENGTH_LONG).show();
             }
 
-        }else {
-            Toast.makeText(this, "No Image Selected.",Toast.LENGTH_LONG).show();
         }
     }
 }

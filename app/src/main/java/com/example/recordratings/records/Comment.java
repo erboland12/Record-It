@@ -11,8 +11,9 @@ public class Comment {
     private String mCommentId;
     private String mPhotoString;
     private int mVotes;
+    private long mUnixTime;
 
-    public Comment(String name, String contents, String time, String userId, String recId, String commentId, String photo, int votes){
+    public Comment(String name, String contents, String time, String userId, String recId, String commentId, String photo, int votes, long unixTime){
         mDisplayName = name;
         mContents = contents;
         mTimestamp = time;
@@ -21,6 +22,7 @@ public class Comment {
         mCommentId = commentId;
         mPhotoString = photo;
         mVotes = votes;
+        mUnixTime = unixTime;
     }
 
 
@@ -53,4 +55,6 @@ public class Comment {
     public int getmVotes(){
         return mVotes;
     }
+
+    public long getUnixTime(){ return mUnixTime; }
 }
