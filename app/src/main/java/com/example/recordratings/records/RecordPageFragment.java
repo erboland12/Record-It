@@ -449,6 +449,10 @@ public class RecordPageFragment extends Fragment {
         Uri uri = Uri.parse(photoStringTemp);
         Picasso.get().load(uri).fit().centerCrop().into(photo);
 
+        if(!photoStringTemp.equals("https://firebasestorage.googleapis.com/v0/b/record-ratings.appspot.com/o/content%3A%2Fcom.android.providers.downloads.documents%2Fdocument%2F2695?alt=media&token=d8740fa6-6385-4eb7-bc6c-8b6d9b78dc40")){
+            photo.setBackground(getResources().getDrawable(R.drawable.image_view_bg));
+        }
+
         description = view.findViewById(R.id.records_page_desc);
         description.setText(descTemp);
     }

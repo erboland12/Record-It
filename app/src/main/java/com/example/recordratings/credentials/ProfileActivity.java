@@ -257,7 +257,10 @@ public class ProfileActivity extends AppCompatActivity {
             }
         }else{
             for(int i = 0; i < menu.size(); i++) {
-                if (!mAuth.getCurrentUser().getUid().equals(uid)) {
+                if(mAuth.getCurrentUser() == null){
+                    menu.getItem(i).setVisible(false);
+                }
+                else if(!mAuth.getCurrentUser().getUid().equals(uid)){
                     menu.getItem(i).setVisible(false);
                 }
             }

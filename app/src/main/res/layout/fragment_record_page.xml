@@ -29,7 +29,7 @@
                 android:layout_width="275dp"
                 android:layout_height="275dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="5pt"
+                android:layout_marginTop="10pt"
                 tools:srcCompat="@tools:sample/avatars" />
 
             <TextView
