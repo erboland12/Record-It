@@ -29,6 +29,7 @@
         <item name="android:actionMenuTextColor">@color/colorBlack</item>
         <item name="rvcolor">@color/colorWhite</item>
         <item name="toolbarcolor">@color/colorPrimary</item>
+        <item name="android:navigationBarColor">@color/colorBlack</item>
     </style>
 
     <style name="darkTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -45,6 +46,7 @@
         <item name="actionBarItemBackground">@color/colorBlack</item>
         <item name="rvcolor">@color/darkModeBack</item>
         <item name="toolbarcolor">@color/darkModeBack</item>
+        <item name="android:navigationBarColor">@color/darkModeBack</item>
     </style>
 
     <style name="darkThemeNoBar" parent="Theme.AppCompat.Light.NoActionBar">
@@ -61,6 +63,7 @@
         <item name="actionBarItemBackground">@color/colorBlack</item>
         <item name="rvcolor">@color/darkModeBack</item>
         <item name="toolbarcolor">@color/darkModeBack</item>
+        <item name="android:navigationBarColor">@color/darkModeBack</item>
     </style>
 
     <style name="darkTheme.Preferences" parent="Theme.AppCompat.DayNight.DarkActionBar">
@@ -77,6 +80,7 @@
         <item name="rvcolor">@color/darkModeBack</item>
         <item name="android:preferenceCategoryStyle">@color/colorWhite</item>
         <item name="toolbarcolor">@color/darkModeBack</item>
+        <item name="android:navigationBarColor">@color/darkModeBack</item>
     </style>
 
     <style name="FragTheme" parent="Theme.AppCompat.Light">
