@@ -174,8 +174,8 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
                     editor.apply();
                     editor.commit();
                 }
-//                getActivity().finish();
-//                startActivity(new Intent(SettingsActivity.getContextOfApplication(), SettingsActivity.class));
+                getActivity().finish();
+                startActivity(new Intent(SettingsActivity.getContextOfApplication(), SettingsActivity.class));
                 return true;
             }
         });
@@ -215,7 +215,6 @@ public class MyPreferencesFragment extends PreferenceFragmentCompat{
 
                 if(returnDark()){
                     reportEdit.setHintTextColor(getResources().getColor(R.color.hintDarkModeColor));
-
                 }
                 String[] items = new String[]{"Inappropriate Profile", "Inappropriate Comments", "Offensive Language",
                                               "Harassing Another User", "Advertising Unauthorized Content"};

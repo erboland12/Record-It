@@ -20,8 +20,4 @@
     </item>
     <item android:id="@+id/log_out"
         android:title="@string/sign_out"/>
-    <item
-        android:id="@+id/quit_app"
-        android:title="@string/close_app">
-    </item>
 </menu>

@@ -42,6 +42,7 @@
         android:layout_marginLeft="10pt"
         android:layout_marginRight="10pt"
         android:background="@drawable/border"
+        android:textColor="@color/colorBlack"
         android:scrollbars="vertical"
         />
     <Button

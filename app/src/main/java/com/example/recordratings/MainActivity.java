@@ -245,10 +245,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 finish();
                 m.moveActivity(MainActivity.this, SettingsActivity.class);
             }
-            case R.id.quit_app:{
-                finish();
-                System.exit(0);
-            }
         }
         //close navigation drawer
         mDrawerLayout.closeDrawer(GravityCompat.START);

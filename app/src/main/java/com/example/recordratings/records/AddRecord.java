@@ -212,7 +212,6 @@ public class AddRecord extends AppCompatActivity {
                     if(photoToString == null){
                         photoToString = "https://firebasestorage.googleapis.com/v0/b/record-ratings.appspot.com/o/content%3A%2Fcom.android.providers.downloads.documents%2Fdocument%2F2695?alt=media&token=d8740fa6-6385-4eb7-bc6c-8b6d9b78dc40";
                     }
-
                     //Stores values from front end inputs to be put into record item
                     String id = mAuth.getUid();
                     String album = albumName.getText().toString().trim();
@@ -262,7 +261,7 @@ public class AddRecord extends AppCompatActivity {
                             @Override
                             public void onSuccess(Uri uri) {
                                 Uri downloadUri = uri;
-                                Picasso.get().load(uri).into(albumCover);
+                                Picasso.get().load(uri).fit().centerCrop().into(albumCover);
                                 photoToString = downloadUri.toString();
                             }
                         });
@@ -273,7 +272,8 @@ public class AddRecord extends AppCompatActivity {
                 e.printStackTrace();
                 Toast.makeText(this, "Something Went Wrong.  Please Try Again.", Toast.LENGTH_LONG).show();
             }
-
+            Toast.makeText(this, "Loading Image...", Toast.LENGTH_LONG).show();
+            albumCover.setBackground(getResources().getDrawable(R.drawable.image_view_bg));
         }
     }
 

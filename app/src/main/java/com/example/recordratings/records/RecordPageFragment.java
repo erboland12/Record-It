@@ -405,7 +405,7 @@ public class RecordPageFragment extends Fragment {
         setDetailViewVariables(view);
 
         //Additional styling if night mode is enabled
-        if(isDark) {
+        if(returnDark()) {
             view1.setBackgroundColor(getResources().getColor(R.color.colorWhite));
             album.setTextColor(getResources().getColor(R.color.colorWhite));
             artist.setTextColor(getResources().getColor(R.color.hintDarkModeColor));
@@ -414,10 +414,8 @@ public class RecordPageFragment extends Fragment {
             commentCharCount.setTextColor(getResources().getColor(R.color.colorWhite));
             layout.setBackgroundColor(getResources().getColor(R.color.darkModeRealBack));
         }
-
         return view;
     }
-
 
     /**
      * This interface must be implemented by activities that contain this
@@ -429,6 +427,7 @@ public class RecordPageFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
