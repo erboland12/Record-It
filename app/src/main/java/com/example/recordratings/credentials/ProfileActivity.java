@@ -378,7 +378,6 @@ public class ProfileActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "Canceled.", Toast.LENGTH_SHORT).show();
                 alertDialog.cancel();
             }
         });
@@ -422,6 +421,7 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
             }
 
+            Toast.makeText(this, "Loading Image...", Toast.LENGTH_LONG).show();
         }
     }
 

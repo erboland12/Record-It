@@ -269,17 +269,6 @@ public class SignInActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean checkDisplayNameAvailability(final String dn) throws InterruptedException {
-        //DB query to determine if display name is in use
-//        final CountDownLatch loginLatch = new CountDownLatch (1);
-
-        //Login latch that handles synchronous call
-//        loginLatch.await(5L, TimeUnit.SECONDS);
-
-        return taken;
-
-    }
-
     //Opens gallery to choose profile picture
     public void chooseImage() {
         Intent intent = new Intent();
@@ -314,6 +303,7 @@ public class SignInActivity extends AppCompatActivity {
                 Toast.makeText(this, "Something Went Wrong.  Please Try Again", Toast.LENGTH_LONG).show();
             }
 
+            Toast.makeText(this, "Loading Image...", Toast.LENGTH_LONG).show();
         }
     }
 }
