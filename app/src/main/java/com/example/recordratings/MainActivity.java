@@ -408,6 +408,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mAuth = FirebaseAuth.getInstance();
         menuPic = hView.findViewById(R.id.menu_picture);
         menuSub = hView.findViewById(R.id.menu_sub);
+        if(records != null){
+            records = new ArrayList<>();
+        }
     }
 
 

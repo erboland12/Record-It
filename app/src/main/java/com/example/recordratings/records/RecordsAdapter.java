@@ -140,7 +140,7 @@ public class RecordsAdapter extends
         Picasso.get().load(uri).fit().centerCrop().into(imageView);
 
         final TextView textView = viewHolder.albumTextView;
-        if(buf.getTitle().length() > 21){
+        if(buf.getTitle().length() >= 21){
             String shortened = buf.getTitle().substring(0, 18);
             shortened += "...";
             textView.setText(shortened);
@@ -149,8 +149,8 @@ public class RecordsAdapter extends
         }
 
         final TextView textView2 = viewHolder.artistTextView;
-        if(buf.getArtist().length() > 28){
-            String shortened = buf.getArtist().substring(0, 25);
+        if(buf.getArtist().length() >= 27){
+            String shortened = buf.getArtist().substring(0, 24);
             shortened += "...";
             textView2.setText(shortened);
         }else{

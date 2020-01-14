@@ -56,6 +56,7 @@ public class SettingsActivity extends AppCompatActivity {
     //Returns to home page on back press
     @Override
     public void onBackPressed(){
+        finish();
         startActivity(new Intent(SettingsActivity.this, MainActivity.class));
     }
 
