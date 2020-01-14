@@ -72,9 +72,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CircleImageView menuPic;
     private TextView menuSub;
 
-    //Intent module call
-    MovePage m = new MovePage();
-
     //Spinner declaration
     private Spinner filter;
 
@@ -93,9 +90,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseAuth mAuth;
     private com.google.firebase.firestore.FirebaseFirestore db;
 
+    //Variables used to preserve recycler view position upon activity move
     private static String LIST_STATE = "list_state";
     private Parcelable savedRecyclerLayoutState;
-    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -266,25 +263,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //Performs filter on database
     private void filter(CharSequence text){
         tempRecords.addAll(records);
-        records = new ArrayList<>();
         for(Records record: tempRecords){
-            if(filter.getSelectedItem().toString() == "No Filter"){
+            if(filter.getSelectedItem().toString().equals("No Filter")){
                 if(record.getTitle().toLowerCase().contains(text) || record.getArtist().toLowerCase().contains(text) ||
                    record.getGenre().toLowerCase().contains(text)){
                     records.add(record);
                 }
             }
-            if(filter.getSelectedItem().toString() == "Album"){
+            if(filter.getSelectedItem().toString().equals("Album")){
                 if(record.getTitle().toLowerCase().contains(text)){
                     records.add(record);
                 }
             }
-            if(filter.getSelectedItem().toString() == "Artist"){
+            if(filter.getSelectedItem().toString().equals("Artist")){
                 if(record.getArtist().toLowerCase().contains(text)){
                     records.add(record);
                 }
             }
-            if(filter.getSelectedItem().toString() == "Genre"){
+            if(filter.getSelectedItem().toString().equals("Genre")){
                 if(record.getGenre().toLowerCase().contains(text)){
                     records.add(record);
                 }
@@ -292,8 +288,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         adapter = new RecordsAdapter(records);
         rvRecords.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        adapter.notifyDataSetChanged();
         rvRecords.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
         records = new ArrayList<>();
 
     }
@@ -333,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //Closes activity on back pressed
     @Override
     public void onBackPressed() {
-        this.finishAffinity();
+        System.exit(1);
     }
 
     //Determines if night mode preference is enabled
@@ -369,15 +365,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                         records.add(new Records(id, album, artist, rating, photo, genre, desc, recId, date, dn));
                     }
-                    for(int i = 0; i < 50; i++){
-                        records.add(new Records("f", "f", "f", 3, "f", "f", "f", "f", 3, "f"));
-                    }
                 }
-//                adapter = new RecordsAdapter(records);
+                adapter = new RecordsAdapter(records);
                 rvRecords.setAdapter(adapter);
                 rvRecords.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                 adapter.notifyDataSetChanged();
-
             }
         });
 
@@ -391,6 +383,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             Uri uri = Uri.parse(doc.getString("mPhotoUrl"));
                             Picasso.get().load(uri).into(menuPic);
                             String dn = user.getDisplayName();
+                            menuSub.setText("Welcome Back,");
                             menuSub.append(" " + dn);
                             //Displays additional text if user is granted admin status
                             if(doc.getBoolean("admin") != null){
@@ -406,8 +399,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         });
-//        records = new ArrayList<>();
-//        tempRecords = new ArrayList<>();
     }
 
     //Handles start-up actions
@@ -417,8 +408,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mAuth = FirebaseAuth.getInstance();
         menuPic = hView.findViewById(R.id.menu_picture);
         menuSub = hView.findViewById(R.id.menu_sub);
-        menuSub.setText("Welcome Back,");
-
     }
 
 
