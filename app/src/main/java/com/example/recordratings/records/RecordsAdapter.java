@@ -57,6 +57,7 @@ public class RecordsAdapter extends
     private boolean isCensored;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
+    public static int pos;
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         private TextView albumTextView, artistTextView, userTextView;
@@ -131,6 +132,7 @@ public class RecordsAdapter extends
     public void onBindViewHolder(final RecordsAdapter.ViewHolder viewHolder, int position) {
         // Get the data model based on position
         final Records buf = mRecords.get(position);
+        pos = position;
 
         // Set item views based on your views and data model
         final ImageView imageView = viewHolder.photoImageView;

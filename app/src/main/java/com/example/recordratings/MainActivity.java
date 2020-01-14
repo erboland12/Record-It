@@ -18,6 +18,9 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -90,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseAuth mAuth;
     private com.google.firebase.firestore.FirebaseFirestore db;
 
+    private static String LIST_STATE = "list_state";
+    private Parcelable savedRecyclerLayoutState;
+    private static final String BUNDLE_RECYCLER_LAYOUT = "recycler_layout";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +129,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Initializes RV w/ adapter
         rvRecords = findViewById(R.id.rvRecords);
         adapter = new RecordsAdapter(records);
-        rvRecords.setAdapter(adapter);
 
         //Sets up search view and filter spinner
         search = findViewById(R.id.action_search);
@@ -135,9 +140,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 filter("Test");
             }
         });
-
-        //Makes initial call to load db contents into RV and creates listener for only showing
-        //filter when search icon is clicked.
 
         //Icon click listener that sets filter visibility
         search.setOnSearchClickListener(new View.OnClickListener(){
@@ -155,6 +157,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return false;
             }
         });
+
+        //Puts current user into variable and calls db query
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        readFromDatabase(currentUser);
 
         //Populates filter spinner with sort options
         populateFilter();
@@ -258,7 +265,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     //Performs filter on database
     private void filter(CharSequence text){
-
         tempRecords.addAll(records);
         records = new ArrayList<>();
         for(Records record: tempRecords){
@@ -285,9 +291,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
         adapter = new RecordsAdapter(records);
-        rvRecords.setAdapter(adapter);
         rvRecords.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         adapter.notifyDataSetChanged();
+        rvRecords.setAdapter(adapter);
         records = new ArrayList<>();
 
     }
@@ -339,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //Reads in record collections to add to unfiltered recycler view
     public void readFromDatabase(final FirebaseUser user){
         db = FirebaseFirestore.getInstance();
-        records = new ArrayList<>();
+
         //Database query to store all record documents as objects
         db.collection("records").orderBy("datePostedUnix", DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -363,8 +369,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                         records.add(new Records(id, album, artist, rating, photo, genre, desc, recId, date, dn));
                     }
+                    for(int i = 0; i < 50; i++){
+                        records.add(new Records("f", "f", "f", 3, "f", "f", "f", "f", 3, "f"));
+                    }
                 }
-                adapter = new RecordsAdapter(records);
+//                adapter = new RecordsAdapter(records);
                 rvRecords.setAdapter(adapter);
                 rvRecords.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                 adapter.notifyDataSetChanged();
@@ -397,8 +406,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         });
-        records = new ArrayList<>();
-        tempRecords = new ArrayList<>();
+//        records = new ArrayList<>();
+//        tempRecords = new ArrayList<>();
     }
 
     //Handles start-up actions
@@ -409,7 +418,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         menuPic = hView.findViewById(R.id.menu_picture);
         menuSub = hView.findViewById(R.id.menu_sub);
         menuSub.setText("Welcome Back,");
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        readFromDatabase(currentUser);
+
+    }
+
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        savedRecyclerLayoutState = rvRecords.getLayoutManager().onSaveInstanceState();
+        outState.putParcelable(LIST_STATE, savedRecyclerLayoutState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if(savedInstanceState != null){
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(LIST_STATE);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(savedRecyclerLayoutState != null){
+            rvRecords.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+        }
     }
 }

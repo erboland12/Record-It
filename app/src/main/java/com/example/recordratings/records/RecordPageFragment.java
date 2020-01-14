@@ -736,5 +736,6 @@ public class RecordPageFragment extends Fragment {
                         adapter.notifyDataSetChanged();
                     }
                 }).show();
+
     }
 }
